@@ -1,0 +1,43 @@
+# Environnement virtuel
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# PyCharm
+.idea/
+*.iml
+
+# Base de données
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Modèles ML
+*.pkl
+*.h5
+*.pt
+*.bin
