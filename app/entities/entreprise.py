@@ -7,6 +7,6 @@ class Entreprise:
     id: str
     name: str
     email: str
-    number: int
+    number: str
     location: str
     creation_date: datetime
