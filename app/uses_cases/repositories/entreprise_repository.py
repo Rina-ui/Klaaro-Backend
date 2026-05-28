@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.entreprise import Entreprise
@@ -6,22 +6,22 @@ from app.entities.entreprise import Entreprise
 
 class EntrepriseRepository(ABC):
 
-    @staticmethod
-    def save_entreprise(entreprise: Entreprise):
-        pass 
-
-    @staticmethod
-    def update_entreprise(entreprise: Entreprise):
+    @abstractmethod
+    def save_entreprise(self, entreprise: Entreprise) -> Entreprise:
         pass
 
-    @staticmethod
-    def find_by_id(entreprise_id: str):
+    @abstractmethod
+    def update_entreprise(self, entreprise: Entreprise) -> Entreprise:
         pass
 
-    @staticmethod
+    @abstractmethod
+    def find_by_id(self, entreprise_id: str) -> Entreprise:
+        pass
+
+    @abstractmethod
     def find_all(self) -> List[Entreprise]:
         pass
 
-    @staticmethod
-    def delete_entreprise(entreprise_id: str):
+    @abstractmethod
+    def delete_entreprise(self, entreprise_id: str) -> None:
         pass

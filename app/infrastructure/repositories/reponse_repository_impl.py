@@ -19,20 +19,20 @@ class ReponseRepositoryImpl(ReponseRepository):
 
         return reponse
 
-    def find_by_id(self, rapport_id: str):
+    def find_by_id(self, reponse_id: str):
         return (
             self.db.query(ReponseModel)
-            .filter(ReponseModel.id == rapport_id)
+            .filter(ReponseModel.id == reponse_id)
             .first()
         )
 
     def find_all(self):
         return self.db.query(ReponseModel).all()
 
-    def delete_response(self, rapport_id: str):
+    def delete_response(self, reponse_id: str):
         model = (
             self.db.query(ReponseModel)
-            .filter(ReponseModel.id == rapport_id)
+            .filter(ReponseModel.id == reponse_id)
             .first()
         )
 

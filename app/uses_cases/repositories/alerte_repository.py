@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.alerte import Alerte
@@ -6,22 +6,22 @@ from app.entities.alerte import Alerte
 
 class AlerteRepository(ABC):
 
-    @staticmethod
-    def save(alerte: Alerte):
+    @abstractmethod
+    def save(self, alerte: Alerte) -> Alerte:
         pass
 
-    @staticmethod
-    def update_alert(alerte: Alerte):
+    @abstractmethod
+    def update_alert(self, alerte: Alerte) -> Alerte:
         pass
 
-    @staticmethod
-    def find_by_id(alerte_id: str):
+    @abstractmethod
+    def find_by_id(self, alerte_id: str) -> Alerte:
         pass
 
-    @staticmethod
+    @abstractmethod
     def find_all(self) -> List[Alerte]:
         pass
 
-    @staticmethod
-    def delete(alerte_id: str):
+    @abstractmethod
+    def delete(self, alerte_id: str) -> None:
         pass

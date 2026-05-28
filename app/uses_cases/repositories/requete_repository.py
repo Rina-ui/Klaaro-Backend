@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.requete import Requete
@@ -6,18 +6,18 @@ from app.entities.requete import Requete
 
 class RequeteRepository(ABC):
 
-    @staticmethod
-    def save_requete(requete: Requete):
+    @abstractmethod
+    def save_requete(self, requete: Requete) -> Requete:
         pass
 
-    @staticmethod
-    def find_by_id(requete_id: str):
+    @abstractmethod
+    def find_by_id(self, requete_id: str) -> Requete:
         pass
 
-    @staticmethod
+    @abstractmethod
     def find_all(self) -> List[Requete]:
         pass
 
-    @staticmethod
-    def delete_request(requete_id: str):
+    @abstractmethod
+    def delete_request(self, requete_id: str) -> None:
         pass

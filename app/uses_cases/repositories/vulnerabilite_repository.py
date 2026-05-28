@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.vulnerabilite import Vulnerabilite
@@ -6,18 +6,18 @@ from app.entities.vulnerabilite import Vulnerabilite
 
 class VulnerabiliteRepository(ABC):
 
-    @staticmethod
-    def save_vulnerabilite(vulnerabilite: Vulnerabilite):
+    @abstractmethod
+    def save_vulnerabilite(self, vulnerabilite: Vulnerabilite) -> Vulnerabilite:
         pass
 
-    @staticmethod
-    def find_vulnerabilite_by_id(vulnerabilite_id: str):
+    @abstractmethod
+    def find_vulnerabilite_by_id(self, vulnerabilite_id: str) -> Vulnerabilite:
         pass
 
-    @staticmethod
-    def find_all(self) -> List[Vulnerabilite]:
+    @abstractmethod
+    def find_all(self) -> List[Vulnerabilite] :
         pass
 
-    @staticmethod
-    def delete_vulnerabilite_by_id(vulnerabilite_id: str):
+    @abstractmethod
+    def delete_vulnerabilite_by_id(self, vulnerabilite_id: str) -> None:
         pass 

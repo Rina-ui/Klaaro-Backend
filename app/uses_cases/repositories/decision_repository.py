@@ -6,15 +6,15 @@ from app.entities.decision import Decision
 class DecisionRepository(ABC):
 
     @abstractmethod
-    def save_decision(self, decision: Decision):
+    def save_decision(self, decision: Decision) -> Decision:
         pass
 
     @abstractmethod
-    def update_decision(self, decision: Decision):
+    def update_decision(self, decision: Decision) -> Decision:
         pass
 
     @abstractmethod
-    def find_decision_by_id(self, decision_id: str):
+    def find_decision_by_id(self, decision_id: str) -> Decision:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class DecisionRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_decision(self, decision_id: str):
+    def delete_decision(self, decision_id: str) -> None:
         pass

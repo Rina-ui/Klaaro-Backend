@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.document import Document
@@ -6,22 +6,22 @@ from app.entities.document import Document
 
 class DocumentRepository(ABC):
 
-    @staticmethod
-    def save_document(document: Document):
+    @abstractmethod
+    def save_document(self, document: Document) -> Document:
         pass
 
-    @staticmethod
-    def update_document(document: Document):
+    @abstractmethod
+    def update_document(self, document: Document) -> Document:
         pass
 
-    @staticmethod
-    def find_by_id(document_id: str):
+    @abstractmethod
+    def find_by_id(self, document_id: str) -> Document:
         pass
 
-    @staticmethod
+    @abstractmethod
     def find_all(self) -> List[Document]:
         pass
 
-    @staticmethod
-    def delete_document(document_id: str):
+    @abstractmethod
+    def delete_document(self, document_id: str) -> None:
         pass

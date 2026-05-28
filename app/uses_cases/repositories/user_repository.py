@@ -1,34 +1,34 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from app.entities.user import User
 
 
 class UserRepository(ABC):
 
-    @staticmethod
-    def save_user(user: User):
+    @abstractmethod
+    def save_user(self, user: User) -> User:
         pass
 
-    @staticmethod
+    @abstractmethod
     def find_all(self) -> list[User]:
         pass
 
-    @staticmethod
-    def find_by_email(email: str):
+    @abstractmethod
+    def find_by_email(self, email: str):
         pass
 
-    @staticmethod
-    def find_by_firstname(username: str):
+    @abstractmethod
+    def find_by_firstname(self, username: str) -> User:
         pass
 
-    @staticmethod
-    def update_user(user: User):
+    @abstractmethod
+    def update_user(self, user: User) -> User:
         pass
 
-    @staticmethod
-    def find_by_id(user_id: str):
+    @abstractmethod
+    def find_by_id(self, user_id: str) -> User:
         pass
 
-    @staticmethod
-    def delete_user(user_id: str):
+    @abstractmethod
+    def delete_user(self, user_id: str) -> None:
         pass

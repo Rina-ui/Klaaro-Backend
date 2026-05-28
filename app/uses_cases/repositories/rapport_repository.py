@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from app.entities.rapport import Rapport
@@ -6,22 +6,22 @@ from app.entities.rapport import Rapport
 
 class RapportRepository(ABC):
 
-    @staticmethod
-    def save_rapport(rapport: Rapport):
+    @abstractmethod
+    def save_rapport(self, rapport: Rapport) -> Rapport:
         pass
 
-    @staticmethod
-    def update_rapport(rapport: Rapport):
+    @abstractmethod
+    def update_rapport(self, rapport: Rapport) -> Rapport:
         pass
 
-    @staticmethod
-    def find_by_id(rapport_id: str):
+    @abstractmethod
+    def find_by_id(self, rapport_id: str):
         pass
 
-    @staticmethod
+    @abstractmethod
     def find_all(self) -> List[Rapport]:
         pass
 
-    @staticmethod
-    def delete_rapport(rapport_id: str):
+    @abstractmethod
+    def delete_rapport(self, rapport_id: str) -> None:
         pass
