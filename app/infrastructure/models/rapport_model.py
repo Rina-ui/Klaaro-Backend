@@ -1,4 +1,5 @@
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Column, DateTime, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.infrastructure.database import Base
 
@@ -11,3 +12,7 @@ class RapportModel(Base):
     content = Column(String, nullable=False)
     periode = Column(String, nullable=False)
     date_generation = Column(DateTime, nullable=False)
+
+    # ajout de fk
+    user_id = Column(String, ForeignKey('user.id'), nullable=False)
+    users = relationship("UserModel", back_populates="rapport")

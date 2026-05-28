@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, Integer, DateTime, Enum
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from app.entities.enum.typeDocument import TypeDocument
 from app.infrastructure.database import Base
@@ -14,3 +14,7 @@ class DocumentModel(Base):
     taille = Column(Integer, nullable=False)
     content = Column(String, nullable=False)
     upload_date = Column(DateTime, nullable=False)
+
+    # ajout de fk
+    user_id = Column(String, ForeignKey('user.id'), nullable=False)
+    users = relationship("UserModel", back_populates="document")
