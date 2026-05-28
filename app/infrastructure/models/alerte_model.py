@@ -3,10 +3,8 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.entities.enum.NiveauVul import NiveauVul
 from app.entities.enum.typeAlerte import TypeAlerte
+from app.infrastructure.database import Base
 
-
-class Base(DeclarativeBase):
-    pass
 
 class AlerteModel(Base):
     __tablename__ = 'alerte'

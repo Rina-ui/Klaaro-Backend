@@ -1,13 +1,7 @@
-from datetime import datetime
-from tokenize import String
+from sqlalchemy import Column, DateTime, String
 
+from app.infrastructure.database import Base
 
-from sqlalchemy import Column, DateTime
-from sqlalchemy.orm import DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
 
 class RapportModel(Base):
     __tablename__ = 'rapport'

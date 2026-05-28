@@ -2,10 +2,8 @@ from sqlalchemy import Column, String, Integer, DateTime, Enum
 from sqlalchemy.orm import DeclarativeBase
 
 from app.entities.enum.typeDocument import TypeDocument
+from app.infrastructure.database import Base
 
-
-class Base(DeclarativeBase):
-    pass
 
 class DocumentModel(Base):
     __tablename__ = 'document'

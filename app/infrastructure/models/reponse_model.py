@@ -3,9 +3,8 @@ from datetime import datetime
 from sqlalchemy import String, Column, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
+from app.infrastructure.database import Base
 
-class Base(DeclarativeBase):
-    pass
 
 class ReponseModel(Base):
     __tablename__ = 'reponse'

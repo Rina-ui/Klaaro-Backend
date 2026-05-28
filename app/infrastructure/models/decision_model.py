@@ -4,10 +4,8 @@ from sqlalchemy import Column, Enum, String, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
 from app.entities.enum.Status import Status
+from app.infrastructure.database import Base
 
-
-class Base(DeclarativeBase):
-    pass
 
 class DecisionModel(Base):
 

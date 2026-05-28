@@ -1,11 +1,6 @@
 from sqlalchemy import Column, String, Enum
-from sqlalchemy.orm import DeclarativeBase
-
+from app.infrastructure.database import Base
 from app.entities.enum.role import Role
-
-
-class Base(DeclarativeBase):
-    pass
 
 class UserModel(Base):
     __tablename__ = 'user'
@@ -13,7 +8,7 @@ class UserModel(Base):
     id = Column(String, primary_key=True)
     firstname = Column(String, nullable=False)
     lastname = Column(String, nullable=False)
-    enail = Column(String, nullable=False)
+    email = Column(String, nullable=False)
     password = Column(String, nullable=False)
     profession = Column(String, nullable=False)
     role = Column (Enum(Role), nullable=False)

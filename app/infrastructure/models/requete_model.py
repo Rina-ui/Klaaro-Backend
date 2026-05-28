@@ -4,10 +4,8 @@ from sqlalchemy import Column, String, Enum, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
 from app.entities.enum.typeRequete import TypeRequete
+from app.infrastructure.database import Base
 
-
-class Base(DeclarativeBase):
-    pass
 
 class RequeteModel(Base):
     __tablename__ = 'requete'

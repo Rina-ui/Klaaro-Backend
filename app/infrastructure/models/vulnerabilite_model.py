@@ -1,13 +1,11 @@
-from sqlalchemy import Column, Enum, String
+from sqlalchemy import Column, Enum, String, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
 from app.entities.enum.NiveauVul import NiveauVul
 from app.entities.enum.Status import Status
 from app.entities.enum.typeVulnerabilite import TypeVulnerabilite
+from app.infrastructure.database import Base
 
-
-class Base(DeclarativeBase):
-    pass
 
 class VulnerabiliteModel(Base):
     __tablename__ = 'vulnerabilites'
@@ -17,3 +15,4 @@ class VulnerabiliteModel(Base):
     niveau = Column(Enum(NiveauVul), nullable=False)
     description = Column(String, nullable=False)
     status = Column(Enum(Status), nullable=False)
+    date_detected = Column(DateTime, nullable=False)

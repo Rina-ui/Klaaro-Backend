@@ -3,9 +3,8 @@ from tokenize import String
 from sqlalchemy import Column, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
+from app.infrastructure.database import Base
 
-class Base(DeclarativeBase):
-    pass
 
 class EntrepriseModel(Base):
     __tablename__ = 'entreprise'
