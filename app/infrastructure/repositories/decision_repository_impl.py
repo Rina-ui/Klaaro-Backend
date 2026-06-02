@@ -1,6 +1,6 @@
 from app.entities.decision import Decision
 from app.infrastructure.models.decision_model import DecisionModel
-from app.uses_cases.repositories.decision_repository import DecisionRepository
+from app.use_cases.repositories.decision_repository import DecisionRepository
 from sqlalchemy.orm import Session
 
 

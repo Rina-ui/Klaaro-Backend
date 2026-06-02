@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from app.entities.enum.account_type import AccountType
 from app.entities.enum.role import Role
 
 
@@ -12,3 +13,4 @@ class User:
     password: str
     profession: str
     role: Role
+    account_type: AccountType

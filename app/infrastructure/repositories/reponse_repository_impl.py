@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.reponse import Reponse
 from app.infrastructure.models.reponse_model import ReponseModel
-from app.uses_cases.repositories.reponse_repository import ReponseRepository
+from app.use_cases.repositories.reponse_repository import ReponseRepository
 
 
 class ReponseRepositoryImpl(ReponseRepository):

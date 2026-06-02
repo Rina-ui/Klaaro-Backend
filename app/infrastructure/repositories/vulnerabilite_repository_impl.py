@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.vulnerabilite import Vulnerabilite
 from app.infrastructure.models.vulnerabilite_model import VulnerabiliteModel
-from app.uses_cases.repositories.vulnerabilite_repository import VulnerabiliteRepository
+from app.use_cases.repositories.vulnerabilite_repository import VulnerabiliteRepository
 
 
 class VulnerabiliteRepositoryImpl(VulnerabiliteRepository):

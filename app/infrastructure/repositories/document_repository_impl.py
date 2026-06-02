@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.document import Document
 from app.infrastructure.models.document_model import DocumentModel
-from app.uses_cases.repositories.document_repository import DocumentRepository
+from app.use_cases.repositories.document_repository import DocumentRepository
 
 
 class DocumentRepositoryImpl(DocumentRepository):

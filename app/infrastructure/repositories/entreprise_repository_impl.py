@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.entreprise import Entreprise
 from app.infrastructure.models.entreprise_model import EntrepriseModel
-from app.uses_cases.repositories.entreprise_repository import EntrepriseRepository
+from app.use_cases.repositories.entreprise_repository import EntrepriseRepository
 
 
 class EntrepriseRepositoryImpl(EntrepriseRepository):

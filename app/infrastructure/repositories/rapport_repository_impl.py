@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.rapport import Rapport
 from app.infrastructure.models.rapport_model import RapportModel
-from app.uses_cases.repositories.rapport_repository import RapportRepository
+from app.use_cases.repositories.rapport_repository import RapportRepository
 
 
 class RapportRepositoryImpl(RapportRepository):

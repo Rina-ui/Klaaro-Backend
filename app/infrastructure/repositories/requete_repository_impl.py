@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.entities.requete import Requete
 from app.infrastructure.models.requete_model import RequeteModel
-from app.uses_cases.repositories.requete_repository import RequeteRepository
+from app.use_cases.repositories.requete_repository import RequeteRepository
 
 
 class RequeteRepositoryImpl(RequeteRepository):

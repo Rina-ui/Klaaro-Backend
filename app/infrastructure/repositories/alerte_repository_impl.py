@@ -1,6 +1,6 @@
 from app.entities.alerte import Alerte
 from app.infrastructure.models.alerte_model import AlerteModel
-from app.uses_cases.repositories.alerte_repository import AlerteRepository
+from app.use_cases.repositories.alerte_repository import AlerteRepository
 from sqlalchemy.orm import Session
 
 
