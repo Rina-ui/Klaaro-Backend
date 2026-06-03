@@ -1,0 +1,37 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.adapters.schemas.rapport_schema import RapportResponse, RapportRequest
+from app.infrastructure.database import get_db
+from app.infrastructure.repositories.rapport_repository_impl import RapportRepositoryImpl
+from app.use_cases.services.rapport.create_rapport import CreateRapport
+from app.use_cases.services.rapport.find_rapports_by_user import FindRapportsByUser
+
+router = APIRouter(
+    prefix="/rapport",
+    tags=["rapport"]
+)
+
+@router.post("/", response_model=RapportResponse)
+def create_rapport(request: RapportRequest, db: Session = Depends(get_db)):
+    try:
+        repo = RapportRepositoryImpl(db)
+        use_case = CreateRapport(repo)
+        return use_case.execute(
+            type=request.type,
+            content=request.content,
+            periode=request.periode,
+            user_id=request.user_id,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/{user_id}", response_model=RapportResponse)
+def get_rapport(user_id: int, db: Session = Depends(get_db)):
+    try:
+        repo = RapportRepositoryImpl(db)
+        use_case = FindRapportsByUser(repo)
+        return use_case.execute(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
