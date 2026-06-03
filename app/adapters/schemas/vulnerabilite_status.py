@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.entities.enum.NiveauVul import NiveauVul
 from app.entities.enum.Status import Status
@@ -21,5 +21,4 @@ class VulnerabiliteResponse(BaseModel):
     status: Status
     date_detected: datetime
 
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,5 +1,9 @@
+from xml.etree.ElementInclude import include
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.adapters.routes.routes import api_router
 
 app = FastAPI(
     title="Klaaro API",
@@ -20,3 +24,6 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"message": "good"}
+
+# routes
+app.include_router(api_router)

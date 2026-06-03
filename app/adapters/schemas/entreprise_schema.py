@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class EntrepriseRequest(BaseModel):
@@ -17,5 +17,4 @@ class EntrepriseResponse(BaseModel):
     location: str
     creation_date: datetime
 
-    class Config(BaseModel):
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

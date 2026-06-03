@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.entities.enum.account_type import AccountType
 from app.entities.enum.role import Role
@@ -22,8 +22,7 @@ class UserResponse(BaseModel):
     role: Role
     account_type: AccountType
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class LoginRequest(BaseModel):
     email: str
@@ -34,5 +33,4 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from app.entities.enum.typeAlerte import TypeAlerte
 from app.entities.enum.NiveauVul import NiveauVul
@@ -17,5 +17,4 @@ class AlerteResponse(BaseModel):
     niveau_gravite: NiveauVul
     user_id: str
 
-    class Config:
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

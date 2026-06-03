@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.entities.enum.typeRequete import TypeRequete
 
@@ -15,5 +15,4 @@ class RequeteResponse(BaseModel):
     content: str
     send_date: datetime
 
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

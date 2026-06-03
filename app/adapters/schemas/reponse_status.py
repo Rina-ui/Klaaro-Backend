@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ReponseRequest(BaseModel):
@@ -15,5 +15,4 @@ class ReponseResponse(BaseModel):
     received_at: datetime
     received_by: str
 
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

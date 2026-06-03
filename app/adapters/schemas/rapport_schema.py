@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RapportRequest(BaseModel):
@@ -15,5 +15,4 @@ class RapportResponse(BaseModel):
     periode: str
     date_generation: datetime
 
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

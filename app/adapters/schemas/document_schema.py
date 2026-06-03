@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.entities.enum.typeDocument import TypeDocument
 
@@ -19,6 +19,4 @@ class DocumentResponse(BaseModel):
     content: str
     upload_date: datetime
 
-
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

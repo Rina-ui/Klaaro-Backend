@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.entities.enum.Status import Status
 
@@ -17,5 +17,4 @@ class DecisionResponse(BaseModel):
     status: Status
     date: datetime
 
-    class Config(BaseModel):
-        from_attribute = True
+    model_config = ConfigDict(from_attributes=True)

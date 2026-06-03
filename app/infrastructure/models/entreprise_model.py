@@ -1,13 +1,11 @@
-from tokenize import String
-
-from sqlalchemy import Column, DateTime
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import relationship
 
 from app.infrastructure.database import Base
 
 
 class EntrepriseModel(Base):
-    __tablename__ = 'entreprise'
+    __tablename__ = "entreprise"
 
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
@@ -16,5 +14,4 @@ class EntrepriseModel(Base):
     location = Column(String, nullable=False)
     creation_date = Column(DateTime, nullable=False)
 
-    # ajout des relations
     users = relationship("UserModel", back_populates="entreprise")
