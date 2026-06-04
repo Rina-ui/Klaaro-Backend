@@ -2,6 +2,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 
+from jose import jwt
+from datetime import datetime, timedelta
+import os
+
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.user_schema import UserResponse, UserRequest, LoginResponse, LoginRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.user_repository_impl import UserRepositoryImpl
@@ -29,20 +34,39 @@ def register(request: UserRequest, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
+
+SECRET_KEY = os.getenv("SECRET_KEY", "klaaro_secret_key")
+ALGORITHM = "HS256"
+
 @router.post("/login", response_model=LoginResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     try:
         repo = UserRepositoryImpl(db)
         use_case = AuthenticateUser(repo)
-        return use_case.execute(
+        user = use_case.execute(
             email=request.email,
             password=request.password
+        )
+        # Générer le JWT token
+        token_data = {
+            "sub": user.id,
+            "email": user.email,
+            "exp": datetime.utcnow() + timedelta(hours=24)
+        }
+        token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+
+        return LoginResponse(
+            access_token=token,
+            token_type="bearer",
+            user=user
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: str, db: Session = Depends(get_db)):
+def get_user(user_id: str, db: Session = Depends(get_db),
+             current_user = Depends(get_current_user)):
     try:
         repo = UserRepositoryImpl(db)
         use_case = FindUserById(repo)
@@ -51,7 +75,8 @@ def get_user(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.delete("/{user_id}", response_model=UserResponse)
-def delete_user(user_id: str, db: Session = Depends(get_db)):
+def delete_user(user_id: str, db: Session = Depends(get_db),
+                current_user = Depends(get_current_user) ):
     try:
         repo = UserRepositoryImpl(db)
         use_case = DeleteUser(repo)

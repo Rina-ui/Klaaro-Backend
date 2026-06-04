@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.reponse_status import ReponseResponse, ReponseRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.reponse_repository_impl import ReponseRepositoryImpl
@@ -12,7 +13,8 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=ReponseResponse)
-def create_response(request: ReponseRequest, db: Session = Depends(get_db)):
+def create_response(request: ReponseRequest, db: Session = Depends(get_db),
+                    current_user = Depends(get_current_user)):
     try:
         repo = ReponseRepositoryImpl(db)
         use_case = CreateReponse(repo)

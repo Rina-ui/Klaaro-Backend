@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.entreprise_schema import EntrepriseResponse, EntrepriseRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.entreprise_repository_impl import EntrepriseRepositoryImpl
@@ -11,7 +12,8 @@ from app.use_cases.services.entreprise.delete_entreprise import DeleteEntreprise
 router = APIRouter(prefix="/enterprise", tags=["Enterprises"])
 
 @router.post("/", response_model=EntrepriseResponse)
-def create_entreprise(request: EntrepriseRequest, db: Session = Depends(get_db)):
+def create_entreprise(request: EntrepriseRequest, db: Session = Depends(get_db),
+                      current_user = Depends(get_current_user)):
     try:
         repo = EntrepriseRepositoryImpl(db)
         use_case = CreateEntreprise(repo)
@@ -25,7 +27,8 @@ def create_entreprise(request: EntrepriseRequest, db: Session = Depends(get_db))
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{entreprise_id}", response_model=EntrepriseResponse)
-def get_entreprise(entreprise_id: str, db: Session = Depends(get_db)):
+def get_entreprise(entreprise_id: str, db: Session = Depends(get_db),
+                   current_user = Depends(get_current_user)):
     try:
         repo = EntrepriseRepositoryImpl(db)
         use_case = FindEntrepriseById(repo)
@@ -34,7 +37,8 @@ def get_entreprise(entreprise_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.delete("/{entreprise_id}")
-def delete_entreprise(entreprise_id: str, db: Session = Depends(get_db)):
+def delete_entreprise(entreprise_id: str, db: Session = Depends(get_db),
+                      current_user = Depends(get_current_user)):
     try:
         repo = EntrepriseRepositoryImpl(db)
         use_case = DeleteEntreprise(repo)

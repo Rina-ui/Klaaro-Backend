@@ -16,5 +16,4 @@ class ReponseModel(Base):
     received_by= Column(String, nullable=False)
 
     # ajout de fk
-    requete_id = Column(String, ForeignKey('requete_id'), nullable=False)
-    requete = relationship("RequeteModel", back_populates="reponse")
+    requete_id = Column(String, ForeignKey('requete.id'), nullable=False)

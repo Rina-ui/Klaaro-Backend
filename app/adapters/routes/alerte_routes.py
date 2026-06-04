@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.alerte_schema import AlerteResponse, AlerteRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.alerte_repository_impl import AlerteRepositoryImpl
@@ -14,7 +15,8 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=AlerteResponse)
-def create_alerte(request: AlerteRequest, db: Session = Depends(get_db)):
+def create_alerte(request: AlerteRequest, db: Session = Depends(get_db),
+                  current_user = Depends(get_current_user)):
     try:
         repo = AlerteRepositoryImpl(db)
         use_case = CreateAlerte(repo)
@@ -28,7 +30,8 @@ def create_alerte(request: AlerteRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/alerts/{id}", response_model=AlerteResponse)
-def get_alert(user_id: str, db: Session = Depends(get_db)):
+def get_alert(user_id: str, db: Session = Depends(get_db),
+              current_user = Depends(get_current_user)):
     try:
         repo = AlerteRepositoryImpl(db)
         use_case = FindAlertesByUser(repo)

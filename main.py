@@ -4,11 +4,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.adapters.routes.routes import api_router
+from app.infrastructure.database import Base, engine
 
 app = FastAPI(
     title="Klaaro API",
     description="le backend",
-    docs_url="/",
+    docs_url="/docs",
     version="1.0.0"
 )
 
@@ -27,3 +28,6 @@ def root():
 
 # routes
 app.include_router(api_router)
+
+# creer automatiquement la db
+Base.metadata.create_all(bind=engine)

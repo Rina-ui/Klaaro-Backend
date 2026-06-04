@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.vulnerabilite_status import VulnerabiliteResponse, VulnerabiliteRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.vulnerabilite_repository_impl import VulnerabiliteRepositoryImpl
@@ -13,7 +14,8 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=VulnerabiliteResponse)
-def create_vulnerabilite(request: VulnerabiliteRequest, db: Session = Depends(get_db)):
+def create_vulnerabilite(request: VulnerabiliteRequest, db: Session = Depends(get_db),
+                         current_user = Depends(get_current_user)):
     try:
         repo = VulnerabiliteRepositoryImpl(db)
         use_case = CreateVulnerabilite(repo)
@@ -27,7 +29,8 @@ def create_vulnerabilite(request: VulnerabiliteRequest, db: Session = Depends(ge
         raise HTTPException(status_code=400, detail=str(err))
 
 @router.get("/{user_id}", response_model=VulnerabiliteResponse)
-def get_vulnerabilite(user_id: str, db: Session = Depends(get_db)):
+def get_vulnerabilite(user_id: str, db: Session = Depends(get_db),
+                      current_user = Depends(get_current_user)):
     try:
         repo = VulnerabiliteRepositoryImpl(db)
         use_case = FindVulnerabilitesByUser(repo)

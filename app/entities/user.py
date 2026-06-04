@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from app.entities.enum.account_type import AccountType
 from app.entities.enum.role import Role
@@ -14,3 +15,4 @@ class User:
     profession: str
     role: Role
     account_type: AccountType
+    entreprise_id: Optional[str] = None

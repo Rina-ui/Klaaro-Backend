@@ -17,4 +17,3 @@ class AlerteModel(Base):
 
     # ajout de fk
     user_id = Column(String, ForeignKey('user.id'), nullable=False)
-    users = relationship("UserModel", back_populates="alertes")

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.document_schema import DocumentResponse, DocumentRequest
 from app.infrastructure.database import get_db
 from app.infrastructure.repositories.document_repository_impl import DocumentRepositoryImpl
@@ -14,7 +15,8 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=DocumentResponse)
-def create_document(request: DocumentRequest, db: Session = Depends(get_db)):
+def create_document(request: DocumentRequest, db: Session = Depends(get_db),
+                    current_user = Depends(get_current_user)):
     try:
         repo = DocumentRepositoryImpl(db)
         use_case = CreateDocument(repo)
@@ -30,7 +32,8 @@ def create_document(request: DocumentRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/{user_id}", response_model=DocumentResponse)
-def get_document(user_id: str, db: Session = Depends(get_db)):
+def get_document(user_id: str, db: Session = Depends(get_db),
+                 current_user = Depends(get_current_user)):
     try:
         repo = DocumentRepositoryImpl(db)
         use_case = FindDocumentsByUser(repo)
@@ -39,7 +42,8 @@ def get_document(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{document_id}", response_model=DocumentResponse)
-def delete_document(document_id: str, db: Session = Depends(get_db)):
+def delete_document(document_id: str, db: Session = Depends(get_db),
+                    current_user = Depends(get_current_user)):
     try:
         repo = DocumentRepositoryImpl(db)
         use_case = DeleteDocument(repo)

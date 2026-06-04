@@ -14,4 +14,4 @@ class EntrepriseModel(Base):
     location = Column(String, nullable=False)
     creation_date = Column(DateTime, nullable=False)
 
-    users = relationship("UserModel", back_populates="entreprise")
+    # users = relationship("UserModel", back_populates="entreprise")
