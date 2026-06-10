@@ -1,0 +1,402 @@
+[
+  {
+    "instruction": "Analyse ces données de ventes : montant=150000 FCFA, variation=-12%, produit=riz, periode=mars 2024",
+    "response": "Vos ventes de riz ont baissé de 12% en mars 2024, atteignant 150 000 FCFA. Cette tendance baissière mérite votre attention. Vérifiez si cette baisse est liée à une rupture de stock, une baisse de la demande ou une concurrence accrue."
+  },
+  {
+    "instruction": "Analyse : chiffre_affaires=2500000 FCFA, charges=2200000 FCFA, marge=300000 FCFA, mois=janvier",
+    "response": "En janvier, votre chiffre d'affaires est de 2 500 000 FCFA pour des charges de 2 200 000 FCFA, dégageant une marge de 300 000 FCFA soit 12%. Cette marge est faible. Analysez vos principales charges pour identifier des opportunités de réduction des coûts."
+  },
+  {
+    "instruction": "Analyse ventes : produit=huile, ventes=800000 FCFA, variation=+30%, mois=decembre",
+    "response": "Excellente performance pour l'huile en décembre avec 800 000 FCFA de ventes, en hausse de 30%. Cette progression est probablement liée aux fêtes de fin d'année. Anticipez une forte demande pour décembre prochain en augmentant vos stocks dès octobre."
+  },
+  {
+    "instruction": "Analyse stock : produit=tomate, stock_actuel=50kg, vente_journaliere=30kg, jours_restants=1.6",
+    "response": "Attention ! Votre stock de tomates ne couvre que 1.6 jours de ventes au rythme actuel de 30kg par jour. Vous risquez une rupture de stock dans moins de 2 jours. Passez une commande urgente auprès de votre fournisseur immédiatement."
+  },
+  {
+    "instruction": "Analyse client : clients_actifs=45, nouveaux_clients=12, clients_perdus=8, mois=fevrier",
+    "response": "En février, vous gagnez 12 nouveaux clients mais perdez 8, soit un gain net de 4 clients. Votre taux de churn de 18% est préoccupant. Identifiez pourquoi ces 8 clients sont partis — prix, service, concurrence — pour améliorer votre rétention."
+  },
+  {
+    "instruction": "Analyse journaliere : ventes_lundi=250000, ventes_vendredi=450000, ventes_dimanche=80000, secteur=alimentation",
+    "response": "Vos ventes varient fortement selon les jours. Le vendredi est votre meilleur jour avec 450 000 FCFA, soit presque le double du lundi. Le dimanche est votre jour le plus faible avec 80 000 FCFA. Adaptez vos effectifs et vos stocks en conséquence — renforcez le vendredi et réduisez les coûts le dimanche."
+  },
+  {
+    "instruction": "Analyse produit : meilleur_produit=poulet_braise, ventes=1200000 FCFA, part_ca=48%, secteur=restaurant",
+    "response": "Le poulet braisé représente 48% de votre chiffre d'affaires total avec 1 200 000 FCFA. C'est clairement votre produit phare. Assurez-vous de ne jamais manquer de stock sur ce produit et envisagez de développer des offres complémentaires autour de lui pour augmenter le panier moyen."
+  },
+  {
+    "instruction": "Analyse depenses : loyer=300000, salaires=800000, matieres_premieres=600000, total_charges=1700000 FCFA",
+    "response": "Vos charges totales s'élèvent à 1 700 000 FCFA. Les salaires représentent votre principal poste de dépenses avec 47% du total, suivis des matières premières à 35% et du loyer à 18%. Si vous cherchez à réduire vos coûts, commencez par optimiser vos approvisionnements en matières premières."
+  },
+  {
+    "instruction": "Analyse saisonniere : ventes_janvier=500000, ventes_juillet=1200000, ventes_decembre=1500000, secteur=habillement",
+    "response": "Votre activité est fortement saisonnière. Décembre est votre meilleur mois avec 1 500 000 FCFA, suivi de juillet avec 1 200 000 FCFA — probablement lié aux fêtes et à la rentrée scolaire. Janvier est votre mois creux à 500 000 FCFA. Préparez vos stocks dès novembre pour décembre et dès juin pour juillet."
+  },
+  {
+    "instruction": "Analyse rentabilite : prix_vente=5000 FCFA, cout_revient=3200 FCFA, marge_unitaire=1800 FCFA, produit=chemise",
+    "response": "Votre marge unitaire sur la chemise est de 1 800 FCFA soit 36% du prix de vente. C'est une marge correcte pour le secteur habillement. Pour améliorer cette rentabilité, vous pouvez soit négocier vos prix d'achat fournisseur, soit augmenter légèrement votre prix de vente si le marché le permet."
+  },
+  {
+    "instruction": "Analyse paiement : paiements_cash=65%, paiements_mobile=30%, paiements_credit=5%, secteur=epicerie",
+    "response": "65% de vos paiements se font encore en espèces. Votre adoption du mobile money à 30% est un bon signe — c'est une tendance en forte croissance au Togo. Le crédit client à 5% doit être surveillé de près pour éviter les impayés. Encouragez davantage le mobile money pour réduire les risques liés aux espèces."
+  },
+  {
+    "instruction": "Analyse livraison : commandes_livrees=85, commandes_en_retard=15, taux_retard=15%, secteur=ecommerce",
+    "response": "Votre taux de retard de livraison est de 15%, ce qui signifie qu'une commande sur 6 arrive en retard. C'est au-dessus du seuil acceptable de 5%. Les retards de livraison sont une cause majeure de perte de clients dans l'e-commerce. Identifiez les causes principales — transporteur, préparation, distance — et agissez en priorité."
+  },
+  {
+    "instruction": "Analyse employe : nb_employes=8, ca_par_employe=312500 FCFA, secteur=restaurant, mois=avril",
+    "response": "Avec 8 employés générant en moyenne 312 500 FCFA de chiffre d'affaires chacun en avril, votre productivité par employé est un indicateur clé à surveiller. Comparez ce chiffre d'un mois à l'autre pour détecter des baisses de productivité et identifier les périodes nécessitant du renforcement d'équipe."
+  },
+  {
+    "instruction": "Analyse zone : ventes_zone_nord=200000, ventes_zone_sud=750000, ventes_zone_centre=400000",
+    "response": "La zone Sud est votre marché le plus porteur avec 750 000 FCFA de ventes, soit 54% de votre total. La zone Nord est la moins performante avec seulement 200 000 FCFA. Analysez pourquoi la zone Nord sous-performe — manque de visibilité, concurrence locale forte, moins de pouvoir d'achat — et décidez si elle mérite plus d'investissement ou si vous devez concentrer vos efforts sur la zone Sud."
+  },
+  {
+    "instruction": "Analyse panier : panier_moyen=8500 FCFA, variation=-500 FCFA, nb_transactions=120, mois=mai",
+    "response": "Votre panier moyen a baissé de 500 FCFA ce mois-ci pour atteindre 8 500 FCFA sur 120 transactions. Cette baisse peut indiquer que vos clients achètent moins de produits par visite. Mettez en place des techniques de vente additionnelle — offres groupées, promotions sur les achats multiples — pour remontrer ce panier."
+  },
+  {
+    "instruction": "Analyse fournisseur : fournisseur=Marche_Adawlato, delai_livraison=3jours, taux_defaut=8%, prix_moyen=2500 FCFA",
+    "response": "Votre fournisseur au Marché Adawlato livre en 3 jours avec un taux de défaut de 8%. Ce taux de défaut est élevé — 1 produit sur 12 est défectueux. Cela impacte votre rentabilité et la satisfaction de vos clients. Négociez une amélioration de la qualité ou diversifiez vos fournisseurs pour réduire ce risque."
+  },
+  {
+    "instruction": "Analyse tresorerie : encaissements=1500000, decaissements=1800000, solde=-300000 FCFA, mois=mars",
+    "response": "Attention ! Votre trésorerie est négative en mars avec un déficit de 300 000 FCFA. Vos décaissements dépassent vos encaissements de 300 000 FCFA. Cette situation ne peut pas durer. Identifiez immédiatement les dépenses qui peuvent être reportées et relancez vos clients en retard de paiement pour améliorer vos encaissements."
+  },
+  {
+    "instruction": "Analyse promotion : ventes_avant_promo=400000, ventes_pendant_promo=680000, cout_promo=50000, gain_net=230000 FCFA",
+    "response": "Votre promotion a généré un gain net de 230 000 FCFA pour un coût de 50 000 FCFA, soit un retour sur investissement de 460%. C'est une promotion très rentable. Les ventes ont augmenté de 70% pendant la période promotionnelle. Reproduisez cette stratégie régulièrement, surtout sur vos périodes creuses."
+  },
+  {
+    "instruction": "Analyse absenteisme : jours_absence=45, nb_employes=10, taux_absenteisme=18%, periode=trimestre",
+    "response": "Votre taux d'absentéisme de 18% sur le trimestre est préoccupant — vos employés sont absents en moyenne 4.5 jours chacun. Un taux sain est inférieur à 5%. Cet absentéisme élevé impacte votre productivité et votre service client. Menez des entretiens individuels pour comprendre les causes et mettez en place des mesures d'amélioration des conditions de travail."
+  },
+  {
+    "instruction": "Analyse dette : creances_clients=850000 FCFA, dettes_fournisseurs=400000 FCFA, ratio=2.1",
+    "response": "Vous avez 850 000 FCFA de créances clients pour 400 000 FCFA de dettes fournisseurs, soit un ratio de 2.1. Bien que ce ratio soit favorable, vos créances clients sont élevées. Assurez-vous que vos clients paient dans les délais convenus — des créances qui traînent peuvent créer des problèmes de trésorerie même quand votre activité se porte bien."
+  },
+  {
+    "instruction": "Anomalie détectée : transaction=3500000 FCFA, heure=2h du matin, type=vente, jour=lundi",
+    "response": "Alerte ! Une transaction de 3 500 000 FCFA a été détectée à 2h du matin, bien en dehors de vos heures normales d'activité. Ce montant inhabituel à cette heure constitue un signal d'alarme sérieux. Vérifiez immédiatement l'origine de cette transaction et contactez votre équipe de sécurité."
+  },
+  {
+    "instruction": "Anomalie stock : quantite_vendue=850 unités, moyenne_habituelle=50 unités, produit=telephone, jour=mardi",
+    "response": "Une anomalie majeure sur vos ventes de téléphones ! Vous avez vendu 850 unités aujourd'hui contre une moyenne habituelle de 50 unités — soit 17 fois votre volume normal. Vérifiez s'il s'agit d'une vente groupée légitime, d'une erreur de saisie ou d'une fraude potentielle."
+  },
+  {
+    "instruction": "Anomalie connexion : tentatives_echouees=15, duree=10min, compte=caissier_1, ip=192.168.1.50",
+    "response": "Alerte sécurité ! 15 tentatives de connexion échouées en 10 minutes sur le compte caissier_1 depuis l'IP 192.168.1.50. Cela ressemble fortement à une attaque par force brute. Bloquez immédiatement ce compte, changez le mot de passe et vérifiez si d'autres comptes ont été ciblés."
+  },
+  {
+    "instruction": "Anomalie prix : prix_habituel=5000 FCFA, prix_facture=500 FCFA, produit=chemise, vendeur=employe_3",
+    "response": "Anomalie critique détectée ! Le produit chemise a été vendu à 500 FCFA alors que son prix habituel est de 5 000 FCFA — soit 10 fois moins cher. Cette erreur ou manipulation par l'employé 3 représente une perte directe de 4 500 FCFA sur cette transaction. Vérifiez toutes les ventes récentes de cet employé immédiatement."
+  },
+  {
+    "instruction": "Anomalie remboursement : nb_remboursements=12, moyenne_habituelle=1, employe=caissier_2, jour=vendredi",
+    "response": "Alerte fraude potentielle ! Le caissier 2 a effectué 12 remboursements aujourd'hui alors que la moyenne habituelle est de 1 par jour. Ce volume anormal de remboursements un vendredi — fin de semaine — est un signal classique de fraude interne. Auditez immédiatement tous ces remboursements."
+  },
+  {
+    "instruction": "Anomalie accès : fichier=donnees_clients.xlsx, heure=23h45, utilisateur=employe_5, action=telechargement",
+    "response": "Alerte ! L'employé 5 a téléchargé le fichier données_clients.xlsx à 23h45 — en dehors des heures de travail. L'accès aux données clients sensibles à cette heure est très suspect. Cela pourrait indiquer une fuite de données intentionnelle. Révoquez immédiatement ses accès et lancez une investigation interne."
+  },
+  {
+    "instruction": "Anomalie depense : depense=2000000 FCFA, categorie=fournitures, valideur=inconnu, date=samedi",
+    "response": "Transaction suspecte ! Une dépense de 2 000 000 FCFA en fournitures a été validée par un utilisateur inconnu un samedi. Les week-ends et les valideurs non identifiés sont des signaux d'alarme classiques de fraude financière. Bloquez cette transaction si elle n'est pas encore exécutée et identifiez le valideur immédiatement."
+  },
+  {
+    "instruction": "Anomalie ventes : ventes_journee=50000 FCFA, moyenne_7jours=450000 FCFA, baisse=89%, secteur=epicerie",
+    "response": "Chute dramatique de vos ventes ! Aujourd'hui vous avez réalisé seulement 50 000 FCFA contre une moyenne de 450 000 FCFA sur 7 jours — soit une baisse de 89%. Cette chute brutale est anormale et nécessite une investigation immédiate. Causes possibles : problème d'approvisionnement, incident dans votre boutique, fermeture imprévue ou problème de caisse."
+  },
+  {
+    "instruction": "Anomalie réseau : tentatives_intrusion=45, periode=1heure, source=externe, systeme=serveur_principal",
+    "response": "Attaque en cours ! 45 tentatives d'intrusion ont été détectées sur votre serveur principal en une heure depuis une source externe. Votre système est sous attaque active. Activez immédiatement votre pare-feu, bloquez les IP suspectes et contactez votre administrateur système. Ne tardez pas — chaque minute compte."
+  },
+  {
+    "instruction": "Anomalie salaire : salaire_verse=850000 FCFA, salaire_contractuel=425000 FCFA, employe=employe_7",
+    "response": "Anomalie de paie détectée ! L'employé 7 a reçu 850 000 FCFA alors que son salaire contractuel est de 425 000 FCFA — soit exactement le double. Cette erreur représente un trop-perçu de 425 000 FCFA. Vérifiez s'il s'agit d'une erreur de saisie ou d'une manipulation et corrigez immédiatement avant le prochain cycle de paie."
+  },
+  {
+    "instruction": "Anomalie commande : commande=500 sacs_riz, fournisseur=inconnu, montant=7500000 FCFA, valideur=directeur",
+    "response": "Commande suspecte ! Une commande de 500 sacs de riz pour 7 500 000 FCFA a été passée auprès d'un fournisseur inconnu. Même si le directeur l'a validée, l'utilisation d'un nouveau fournisseur pour un montant aussi élevé sans historique est risquée. Vérifiez les références de ce fournisseur avant tout paiement."
+  },
+  {
+    "instruction": "Anomalie mobile_money : nb_transactions=85, montant_total=12500000 FCFA, duree=30min, compte=business_1",
+    "response": "Activité suspecte sur votre compte Mobile Money ! 85 transactions totalisant 12 500 000 FCFA en seulement 30 minutes est un volume anormalement élevé. Ce type d'activité intense peut indiquer une tentative de blanchiment d'argent ou un piratage de compte. Contactez immédiatement votre opérateur Mobile Money pour geler le compte temporairement."
+  },
+  {
+    "instruction": "Anomalie retour : taux_retour=45%, produit=telephone_reconditionne, periode=semaine, nb_retours=23",
+    "response": "Taux de retour alarmant ! 45% de vos téléphones reconditionnés vendus cette semaine ont été retournés — soit 23 appareils sur 51. Ce taux est catastrophique et indique un problème grave de qualité sur ce lot. Suspendez immédiatement la vente de ce produit, contactez votre fournisseur et proposez un remboursement à vos clients concernés."
+  },
+  {
+    "instruction": "Anomalie donnees : valeurs_nulles=340, total_lignes=500, colonne=montant_ventes, fichier=rapport_mai.csv",
+    "response": "Problème de qualité des données détecté ! 340 valeurs manquantes sur 500 lignes dans la colonne montant_ventes de votre rapport de mai — soit 68% de données incomplètes. Votre analyse sera très peu fiable avec ces données. Retournez à la source pour compléter ces valeurs manquantes avant toute analyse."
+  },
+  {
+    "instruction": "Anomalie geographique : transaction_localisation=Paris, compte=client_lome, montant=500000 FCFA, heure=14h",
+    "response": "Alerte géographique ! Une transaction de 500 000 FCFA a été effectuée depuis Paris sur un compte habituellement utilisé à Lomé. Si votre client n'est pas en voyage, son compte a peut-être été compromis. Contactez immédiatement ce client pour confirmer la transaction et bloquez le compte si elle n'est pas reconnue."
+  },
+  {
+    "instruction": "Anomalie inventaire : stock_systeme=200 unités, stock_physique=145 unités, ecart=55 unités, produit=parfum",
+    "response": "Écart d'inventaire significatif ! Votre système indique 200 unités de parfum mais le comptage physique n'en trouve que 145 — soit 55 unités manquantes. Cet écart de 27.5% peut indiquer un vol interne, des erreurs de saisie ou des produits non enregistrés. Réalisez un audit complet et vérifiez les accès à ce stock."
+  },
+  {
+    "instruction": "Anomalie email : emails_recus=250, emails_phishing=45, taux_phishing=18%, periode=semaine",
+    "response": "Votre entreprise est ciblée ! 45 emails de phishing sur 250 reçus cette semaine représentent 18% de vos emails entrants. Ce taux élevé indique une campagne d'hameçonnage ciblée contre votre entreprise. Formez immédiatement vos employés à reconnaître ces emails et renforcez votre filtre anti-spam."
+  },
+  {
+    "instruction": "Anomalie production : production_prevue=1000 unites, production_reelle=420 unites, ecart=-58%, usine=atelier_1",
+    "response": "Chute de production critique ! L'atelier 1 n'a produit que 420 unités sur les 1 000 prévues — soit un écart de 58%. Cette sous-production sévère va impacter vos délais de livraison et votre chiffre d'affaires. Identifiez immédiatement la cause — panne machine, manque de matières premières, absentéisme — et prenez des mesures correctives urgentes."
+  },
+  {
+    "instruction": "Anomalie paiement_fournisseur : paiement=1500000 FCFA, facture=750000 FCFA, ecart=750000 FCFA, fournisseur=Acme",
+    "response": "Erreur de paiement détectée ! Vous avez payé 1 500 000 FCFA au fournisseur Acme alors que la facture est de 750 000 FCFA — vous avez payé le double. Ce trop-versé de 750 000 FCFA doit être réclamé immédiatement. Contactez le fournisseur pour obtenir un remboursement ou un avoir sur votre prochaine commande."
+  },
+  {
+    "instruction": "Anomalie connexion_multiple : nb_connexions_simultanees=8, compte=admin, pays=Togo_Nigeria_Ghana, heure=3h",
+    "response": "Compromission de compte confirmée ! Le compte administrateur est connecté simultanément depuis 8 sessions dans 3 pays différents à 3h du matin. C'est impossible pour un seul utilisateur légitime. Votre compte admin est définitivement compromis. Déconnectez toutes les sessions immédiatement, changez le mot de passe et activez l'authentification à deux facteurs."
+  },
+  {
+    "instruction": "Prédiction ventes : ventes_actuelles=500000 FCFA, croissance_mensuelle=8%, prediction_3mois=?",
+    "response": "Basé sur votre croissance mensuelle de 8%, vos ventes prévues sont : mois 1 = 540 000 FCFA, mois 2 = 583 200 FCFA, mois 3 = 629 856 FCFA. Si cette tendance se maintient, vous pourrez dépasser les 600 000 FCFA dans 3 mois. Continuez vos efforts commerciaux actuels pour maintenir cette dynamique."
+  },
+  {
+    "instruction": "Prédiction stock : vente_journaliere=45 unités, stock_actuel=500 unités, produit=savon, reapprovisionnement=21jours",
+    "response": "Votre stock de savon actuel de 500 unités vous permettra de tenir environ 11 jours au rythme de 45 unités par jour. Or votre délai de réapprovisionnement est de 21 jours. Vous allez manquer de stock dans 11 jours si vous ne commandez pas aujourd'hui. Passez votre commande immédiatement !"
+  },
+  {
+    "instruction": "Prédiction tresorerie : solde_actuel=800000 FCFA, depenses_mensuelles=1200000 FCFA, recettes_mensuelles=950000 FCFA",
+    "response": "Attention situation critique à venir ! Avec des dépenses de 1 200 000 FCFA et des recettes de 950 000 FCFA, vous perdez 250 000 FCFA par mois. Votre trésorerie actuelle de 800 000 FCFA sera épuisée dans environ 3 mois et 1 semaine. Agissez maintenant pour réduire vos charges ou augmenter vos recettes avant d'atteindre ce point critique."
+  },
+  {
+    "instruction": "Prédiction clients : clients_actuels=200, taux_acquisition=5%/mois, taux_churn=2%/mois, prediction_6mois=?",
+    "response": "Avec un taux d'acquisition de 5% et un churn de 2% par mois, votre base client nette croît de 3% par mois. Dans 6 mois vous aurez environ 239 clients. Pour accélérer cette croissance, réduisez votre churn de 2% à 1% — cela aurait plus d'impact que de doubler votre acquisition."
+  },
+  {
+    "instruction": "Prédiction saisonniere : historique_decembre_2023=1500000, historique_decembre_2022=1200000, croissance_annuelle=25%",
+    "response": "Basé sur vos historiques et votre croissance annuelle de 25%, vos ventes de décembre 2024 devraient atteindre environ 1 875 000 FCFA. Préparez vos stocks dès octobre pour répondre à cette demande. Prévoyez également du personnel supplémentaire pour gérer l'afflux de clients en décembre."
+  },
+  {
+    "instruction": "Prédiction rentabilite : ca_actuel=3000000, charges_fixes=1500000, charges_variables=900000, augmentation_ca_prevue=20%",
+    "response": "Avec une augmentation de CA de 20%, votre chiffre d'affaires atteindra 3 600 000 FCFA. Vos charges variables augmenteront proportionnellement à 1 080 000 FCFA. Votre bénéfice passera de 600 000 à 1 020 000 FCFA soit une hausse de 70% de votre rentabilité. Cette croissance est très intéressante car vos charges fixes restent stables."
+  },
+  {
+    "instruction": "Prédiction emplois : ca_actuel=5000000, ca_prevu=8000000, ca_par_employe=625000, nb_employes_actuels=8",
+    "response": "Pour atteindre votre CA prévu de 8 000 000 FCFA tout en maintenant votre productivité actuelle de 625 000 FCFA par employé, vous aurez besoin de 13 employés soit 5 recrutements supplémentaires. Anticipez ces recrutements 2 à 3 mois avant la période de croissance pour former correctement vos nouveaux employés."
+  },
+  {
+    "instruction": "Prédiction croissance_utilisateurs : users_actuels=500, croissance_hebdo=12%, prediction_2mois=?",
+    "response": "Avec une croissance hebdomadaire de 12%, votre base d'utilisateurs évoluera rapidement. Dans 4 semaines vous aurez environ 787 utilisateurs, dans 8 semaines environ 1 239 utilisateurs. Attention — cette croissance exponentielle va fortement solliciter votre infrastructure. Préparez vos serveurs à gérer 2.5 fois plus d'utilisateurs dans 2 mois."
+  },
+  {
+    "instruction": "Prédiction dette : dette_actuelle=5000000 FCFA, remboursement_mensuel=200000 FCFA, interet=2%/mois",
+    "response": "À votre rythme de remboursement de 200 000 FCFA par mois avec un intérêt de 2%, il vous faudra environ 32 mois soit presque 3 ans pour rembourser cette dette. Le coût total des intérêts sera d'environ 1 900 000 FCFA. Si possible, augmentez vos remboursements mensuels pour réduire significativement ce coût en intérêts."
+  },
+  {
+    "instruction": "Prédiction point_mort : charges_fixes=900000, marge_sur_cout_variable=45%, prediction_ca_necessaire=?",
+    "response": "Votre point mort est de 2 000 000 FCFA de chiffre d'affaires. En dessous de ce seuil vous êtes en perte, au-dessus vous êtes bénéficiaire. Avec une marge sur coût variable de 45%, chaque franc de CA supplémentaire au-delà de 2 000 000 FCFA vous rapporte 0.45 FCFA de bénéfice net. Assurez-vous de toujours dépasser ce seuil."
+  },
+  {
+    "instruction": "Prédiction marche : part_marche_actuelle=8%, croissance_marche=15%/an, croissance_entreprise=25%/an",
+    "response": "Votre entreprise croît 1.67 fois plus vite que votre marché. Dans 3 ans, si ces tendances se maintiennent, votre part de marché passera de 8% à environ 14%. Vous gagnez du terrain sur vos concurrents. Continuez à investir dans votre différenciation pour maintenir cet avantage concurrentiel."
+  },
+  {
+    "instruction": "Prédiction panier_moyen : panier_actuel=12000 FCFA, objectif=15000 FCFA, strategie=vente_croisee",
+    "response": "Pour passer de 12 000 à 15 000 FCFA de panier moyen soit +25%, la vente croisée est une bonne stratégie. En suggérant 2 à 3 produits complémentaires à chaque client, vous pouvez atteindre cet objectif en 2 à 3 mois. Formez vos vendeurs à proposer systématiquement des produits associés et testez des offres groupées attractives."
+  },
+  {
+    "instruction": "Prédiction seuil_alerte : stock_actuel=300 unites, vente_journaliere=25, delai_livraison=5jours, stock_securite=50",
+    "response": "Votre seuil de commande doit être déclenché quand votre stock atteint 175 unités. Ce calcul correspond à 5 jours de livraison multiplié par 25 unités par jour soit 125 unités plus votre stock de sécurité de 50 unités. À 300 unités actuellement vous avez encore 5 jours avant d'atteindre ce seuil. Planifiez votre commande pour dans 5 jours."
+  },
+  {
+    "instruction": "Prédiction revenus_annuels : revenus_jan=800000, revenus_fev=750000, revenus_mar=900000, tendance=croissante",
+    "response": "Vos revenus trimestriels s'établissent à 2 450 000 FCFA avec une tendance croissante. En extrapolant cette progression, vos revenus annuels devraient atteindre environ 11 000 000 FCFA cette année. Le premier trimestre représente votre base — si vous maintenez la dynamique croissante observée, vous pourrez dépasser les 12 000 000 FCFA."
+  },
+  {
+    "instruction": "Prédiction risque_faillite : ratio_liquidite=0.6, dettes_court_terme=3000000, actifs_liquides=1800000",
+    "response": "Alerte risque financier ! Votre ratio de liquidité de 0.6 est inférieur au seuil critique de 1. Cela signifie que vous n'avez que 1 800 000 FCFA d'actifs liquides pour faire face à 3 000 000 FCFA de dettes à court terme. Vous avez un déficit de liquidité de 1 200 000 FCFA. Agissez immédiatement pour éviter des difficultés de paiement dans les prochains mois."
+  },
+  {
+    "instruction": "Prédiction expansion : ca_actuel=10000000, investissement_prevu=5000000, roi_attendu=35%, delai_retour=?",
+    "response": "Avec un investissement de 5 000 000 FCFA et un ROI attendu de 35%, votre retour annuel sur cet investissement sera de 1 750 000 FCFA. Vous récupérerez votre mise initiale en environ 2 ans et 10 mois. C'est un délai de retour acceptable pour une expansion. Assurez-vous d'avoir la trésorerie nécessaire pour supporter les 3 premières années."
+  },
+  {
+    "instruction": "Prédiction impact_prix : prix_actuel=10000 FCFA, hausse_prevue=15%, elasticite=-1.2, impact_ventes=?",
+    "response": "Avec une élasticité de -1.2 et une hausse de prix de 15%, vos ventes devraient baisser d'environ 18%. Si vous vendez actuellement 100 unités par mois, vous en vendrez environ 82 après la hausse. Votre chiffre d'affaires augmentera légèrement malgré tout — calculez précisément si le gain de marge unitaire compense la perte de volume."
+  },
+  {
+    "instruction": "Prédiction performance_employe : ventes_actuelles=450000, objectif=600000, progression_mensuelle=8%",
+    "response": "À son rythme de progression de 8% par mois, cet employé atteindra son objectif de 600 000 FCFA dans environ 2 mois et demi. Continuez à l'accompagner et à le motiver. Si la progression ralentit en dessous de 5% par mois, mettez en place un plan de développement individualisé pour maintenir sa trajectoire."
+  },
+  {
+    "instruction": "Prédiction commande_optimale : cout_commande=25000 FCFA, cout_stockage=500/unite/mois, demande_mensuelle=200 unites",
+    "response": "Votre quantité économique de commande optimale est d'environ 141 unités par commande. À ce niveau vous minimisez vos coûts totaux de commande et de stockage. Vous devriez commander environ 1.4 fois par mois soit toutes les 3 semaines environ. Cette optimisation peut vous faire économiser plusieurs dizaines de milliers de FCFA par an."
+  },
+  {
+    "instruction": "Prédiction saturation_marche : clients_actuels=1500, marche_total_estime=5000, taux_penetration=30%",
+    "response": "Vous avez déjà capturé 30% de votre marché adressable avec 1 500 clients sur 5 000 potentiels. Il vous reste 3 500 clients à conquérir. Cependant à partir de 50% de pénétration la croissance devient plus difficile et coûteuse. Planifiez dès maintenant votre stratégie d'expansion vers de nouveaux marchés ou segments pour maintenir votre croissance future."
+  },
+  {
+    "instruction": "Faille détectée : mot_de_passe=123456, compte=admin, derniere_modification=jamais",
+    "response": "Vulnérabilité critique ! Votre compte administrateur utilise le mot de passe 123456 — l'un des plus piratés au monde — et il n'a jamais été modifié. C'est une porte grande ouverte pour les hackers. Changez ce mot de passe immédiatement avec une combinaison d'au moins 12 caractères incluant majuscules, chiffres et symboles. Activez également l'authentification à deux facteurs."
+  },
+  {
+    "instruction": "Faille détectée : donnees_clients=non_chiffrees, stockage=fichier_excel, acces=tous_les_employes",
+    "response": "Risque majeur de fuite de données ! Vos données clients sont stockées en clair dans un fichier Excel accessible à tous vos employés. Cette pratique viole les bonnes pratiques de sécurité et expose vos clients à des risques sérieux. Chiffrez immédiatement ce fichier, limitez l'accès aux seules personnes qui en ont besoin et envisagez une base de données sécurisée."
+  },
+  {
+    "instruction": "Faille détectée : logiciel=windows_xp, mises_a_jour=desactivees, connexion=internet_permanent",
+    "response": "Système extrêmement vulnérable ! Windows XP n'est plus supporté depuis 2014 et ne reçoit plus aucune mise à jour de sécurité. Connecté en permanence à internet sans mises à jour, votre système est une cible facile pour les ransomwares et autres malwares. Mettez à niveau vers Windows 10 ou 11 en urgence — chaque jour qui passe augmente le risque."
+  },
+  {
+    "instruction": "Faille détectée : sauvegarde=aucune, donnees_critiques=comptabilite_3ans, stockage=disque_dur_unique",
+    "response": "Risque de perte totale de données ! Trois ans de comptabilité stockés sur un seul disque dur sans aucune sauvegarde — une panne, un vol ou un incendie suffit pour tout perdre définitivement. Mettez en place immédiatement une stratégie de sauvegarde 3-2-1 : 3 copies, sur 2 supports différents dont 1 hors site ou dans le cloud."
+  },
+  {
+    "instruction": "Faille détectée : wifi=reseau_ouvert, acces=public, donnees_transmises=transactions_financieres",
+    "response": "Danger immédiat ! Vous transmettez des données financières sur un réseau WiFi ouvert sans mot de passe. N'importe qui dans votre voisinage peut intercepter ces transactions. Sécurisez immédiatement votre WiFi avec un mot de passe WPA3, créez un réseau séparé pour vos clients et utilisez le HTTPS pour toutes vos transactions."
+  },
+  {
+    "instruction": "Faille détectée : antivirus=absent, telechargements_recents=5_fichiers_inconnus, comportement_systeme=lent",
+    "response": "Infection probable ! L'absence d'antivirus combinée à des téléchargements de fichiers inconnus et un ralentissement du système sont des signes classiques d'infection par malware. Installez immédiatement un antivirus, lancez une analyse complète du système et supprimez les fichiers suspects. Changez tous vos mots de passe depuis un autre appareil sain."
+  },
+  {
+    "instruction": "Faille détectée : acces_ex_employe=actif, compte=jean_employe, depart=il_y_a_3mois",
+    "response": "Faille de contrôle d'accès sérieuse ! Le compte de Jean qui a quitté votre entreprise il y a 3 mois est toujours actif. Un ancien employé mécontent pourrait accéder à vos systèmes, voler des données ou causer des dommages. Désactivez ce compte immédiatement et auditez toutes ses activités récentes pour détecter d'éventuels accès non autorisés."
+  },
+  {
+    "instruction": "Faille détectée : certificat_ssl=expire, site_web=boutique_en_ligne, transactions=actives",
+    "response": "Urgence sécurité ! Votre certificat SSL est expiré — vos clients voient un avertissement de sécurité dans leur navigateur et leurs données de paiement ne sont plus chiffrées. Cela tue la confiance de vos clients et expose leurs informations bancaires. Renouvelez votre certificat SSL dans les prochaines heures — c'est critique pour votre boutique en ligne."
+  },
+  {
+    "instruction": "Faille détectée : injection_sql=possible, formulaire=connexion, base_de_donnees=non_protegee",
+    "response": "Vulnérabilité critique de niveau élevé ! Votre formulaire de connexion est vulnérable aux injections SQL. Un attaquant peut utiliser cette faille pour accéder à toute votre base de données, voler ou supprimer vos données. Contactez immédiatement votre développeur pour ajouter une validation des entrées et utiliser des requêtes préparées. Cette faille doit être corrigée aujourd'hui."
+  },
+  {
+    "instruction": "Faille détectée : partage_mot_de_passe=oui, nb_employes_partage=5, compte=caisse_principale",
+    "response": "Mauvaise pratique de sécurité ! 5 employés partagent le même mot de passe pour accéder à la caisse principale. En cas de fraude il sera impossible d'identifier le responsable. Créez un compte individuel pour chaque employé avec des droits adaptés à leur rôle. Cela améliore la traçabilité et réduit significativement les risques de fraude interne."
+  },
+  {
+    "instruction": "Faille détectée : base_de_donnees=accessible_internet, port=5432, authentification=faible",
+    "response": "Exposition critique de votre base de données ! Votre base de données PostgreSQL est directement accessible depuis internet sur le port 5432 avec une authentification faible. C'est l'une des configurations les plus dangereuses qui existe. Fermez immédiatement ce port depuis internet, placez votre base derrière un pare-feu et renforcez l'authentification. N'attendez pas — cette faille est activement exploitée par des robots automatiques."
+  },
+  {
+    "instruction": "Faille détectée : permissions_fichiers=777, serveur=production, fichiers=configuration_app",
+    "response": "Permissions dangereuses détectées ! Vos fichiers de configuration en production ont les permissions 777 — tout le monde peut les lire, modifier et exécuter. Ces fichiers contiennent probablement vos mots de passe de base de données et clés API. Changez immédiatement ces permissions en 600 ou 640 et vérifiez que personne n'a déjà lu ces informations sensibles."
+  },
+  {
+    "instruction": "Faille détectée : logs=desactives, systeme=caisse, periode=6mois",
+    "response": "Absence de traçabilité pendant 6 mois ! Vos logs de caisse sont désactivés depuis 6 mois — vous ne pouvez pas savoir qui a fait quoi sur votre système de caisse. En cas de fraude ou d'erreur, il vous sera impossible de retracer les événements. Activez immédiatement la journalisation complète et conservez ces logs pendant au moins 1 an."
+  },
+  {
+    "instruction": "Faille détectée : code_source=depot_public_github, fichier=.env, contenu=cles_api_et_mots_de_passe",
+    "response": "Catastrophe sécurité ! Vos clés API et mots de passe sont exposés publiquement sur GitHub. Des robots automatiques scannent GitHub en permanence et ont peut-être déjà récupéré ces informations. Révoquons immédiatement toutes les clés exposées, supprimez le fichier .env du dépôt public, ajoutez-le au .gitignore et passez le dépôt en privé."
+  },
+  {
+    "instruction": "Faille détectée : authentification_2fa=absente, comptes_sensibles=5, acces=donnees_financieres",
+    "response": "Authentification insuffisante sur vos comptes sensibles ! Cinq comptes ayant accès à vos données financières ne sont protégés que par un simple mot de passe. L'authentification à deux facteurs est indispensable pour ces comptes critiques. Activez le 2FA immédiatement — une application comme Google Authenticator suffit et c'est gratuit. Cette mesure bloque 99% des tentatives de piratage."
+  },
+  {
+    "instruction": "Faille détectée : session_utilisateur=jamais_expiree, application=gestion_stock, acces=web",
+    "response": "Risque de session hijacking ! Vos sessions utilisateurs ne expirent jamais dans votre application de gestion de stock. Si un employé oublie de se déconnecter sur un appareil partagé ou public, n'importe qui peut accéder à votre système. Configurez une expiration automatique des sessions après 30 minutes d'inactivité et forcez la déconnexion lors de la fermeture du navigateur."
+  },
+  {
+    "instruction": "Faille détectée : transfert_donnees=ftp_non_securise, fichiers=rapports_financiers, frequence=quotidienne",
+    "response": "Protocole de transfert non sécurisé ! Vous envoyez vos rapports financiers quotidiennement via FTP non sécurisé — vos données transitent en clair sur internet et peuvent être interceptées. Passez immédiatement à SFTP ou FTPS qui chiffrent les données en transit. Cette migration est simple et protégera la confidentialité de vos informations financières."
+  },
+  {
+    "instruction": "Faille détectée : plugin_cms=non_mis_a_jour, version=2019, vulnerabilites_connues=12",
+    "response": "12 vulnérabilités connues sur votre plugin ! Un plugin de votre site datant de 2019 et non mis à jour présente 12 failles de sécurité publiquement documentées. Les hackers connaissent ces failles et les exploitent activement. Mettez à jour ce plugin immédiatement ou désactivez-le si aucune mise à jour n'est disponible. Un site piraté peut détruire la réputation de votre entreprise."
+  },
+  {
+    "instruction": "Faille détectée : chiffrement_stockage=absent, donnees=numeros_carte_bancaire, base_de_donnees=mysql",
+    "response": "Violation grave de sécurité des paiements ! Stocker des numéros de carte bancaire non chiffrés est illégal et contraire aux normes PCI-DSS. En cas de piratage vous seriez responsable de toutes les fraudes subies par vos clients. Supprimez immédiatement ces données de votre base, ne stockez jamais de numéros de carte complets et utilisez un prestataire de paiement certifié."
+  },
+  {
+    "instruction": "Faille détectée : acces_physique=non_controle, salle_serveur=ouverte, visiteurs=acces_libre",
+    "response": "Faille de sécurité physique ! Votre salle serveur est accessible à n'importe qui sans contrôle d'accès. Un accès physique à vos serveurs permet de voler des disques durs, d'installer des keyloggers ou de mettre le système hors service. Installez une serrure à badge ou à code sur cette salle, tenez un registre des accès et installez une caméra de surveillance."
+  },
+  {
+    "instruction": "Décision nécessaire : ventes_en_baisse=3mois_consecutifs, concurrent_nouveau=oui, budget_marketing=0",
+    "response": "Face à 3 mois de baisse consécutive avec un nouveau concurrent, voici vos options prioritaires. Premièrement, analysez ce que votre concurrent fait mieux que vous — prix, qualité, service. Deuxièmement, même sans budget marketing, misez sur le bouche à oreille en demandant à vos clients satisfaits de vous recommander. Troisièmement, fidélisez vos clients actuels avec un programme de récompenses simple. Agir rapidement est crucial — chaque mois perdu renforce votre concurrent."
+  },
+  {
+    "instruction": "Décision nécessaire : demande_augmentation_salaire=employe_cle, budget_limité=oui, risque_depart=élevé",
+    "response": "Situation délicate mais gérable. Calculez d'abord le coût réel du remplacement de cet employé — recrutement, formation, perte de productivité — souvent équivalent à 6 mois de salaire. Si ce coût dépasse l'augmentation demandée, accordez-la. Si le budget est vraiment limité, proposez des avantages non monétaires — flexibilité, formation, responsabilités accrues — pour montrer votre reconnaissance en attendant de pouvoir augmenter le salaire."
+  },
+  {
+    "instruction": "Décision nécessaire : local_commercial=trop_petit, expansion=possible, investissement=15000000 FCFA",
+    "response": "Avant d'investir 15 000 000 FCFA dans un nouveau local, validez trois points essentiels. Premièrement, votre chiffre d'affaires actuel peut-il supporter le loyer ou le remboursement de cet investissement ? Deuxièmement, avez-vous une visibilité sur vos revenus futurs pour les 24 prochains mois ? Troisièmement, avez-vous exploré toutes les alternatives moins coûteuses — optimisation de l'espace actuel, entrepôt séparé, horaires décalés ? N'investissez que si vous avez des réponses solides à ces trois questions."
+  },
+  {
+    "instruction": "Décision nécessaire : fournisseur_actuel=fiable_mais_cher, nouveau_fournisseur=moins_cher_15%_inconnu",
+    "response": "Ne changez pas de fournisseur uniquement pour le prix. Évaluez le nouveau fournisseur sur plusieurs critères — délais de livraison, qualité des produits, minimum de commande, conditions de paiement et stabilité financière. Commencez par une commande test de faible valeur pour valider la qualité. Gardez votre fournisseur actuel en parallèle pendant au moins 3 mois. Une rupture d'approvisionnement peut vous coûter bien plus que 15% d'économie."
+  },
+  {
+    "instruction": "Décision nécessaire : recrutement=2_vendeurs, ca_insuffisant_pour_payer, croissance_prevue=incertaine",
+    "response": "Dans cette situation d'incertitude, il vaut mieux différer le recrutement fixe. Explorez d'abord des alternatives moins risquées — vendeurs à la commission sans salaire fixe, partenariats avec des indépendants ou stages rémunérés. Si la croissance se confirme sur 2 mois consécutifs, procédez au recrutement permanent. Embaucher prématurément avec un CA insuffisant peut précipiter des difficultés financières graves."
+  },
+  {
+    "instruction": "Décision nécessaire : produit_defectueux=150_unites, client_important=affecte, remboursement=cout_eleve",
+    "response": "Ne tardez pas à agir — chaque heure aggrave la situation. Contactez immédiatement votre client important, reconnaissez le problème sans minimiser et proposez un remboursement intégral ou un remplacement prioritaire. Le coût de ce remboursement est bien inférieur à la perte de ce client et au risque de bad buzz. Parallèlement, bloquez les 150 unités restantes, identifiez la cause du défaut et informez votre fournisseur pour obtenir un avoir."
+  },
+  {
+    "instruction": "Décision nécessaire : opportunite_marche=nouvelle_ville, investissement=8000000 FCFA, concurrent_deja_present=oui",
+    "response": "L'entrée sur un nouveau marché avec un concurrent déjà établi nécessite une stratégie claire de différenciation. Identifiez précisément pourquoi les clients locaux choisiraient votre offre plutôt que celle du concurrent — prix, qualité, service, proximité. Commencez par une présence légère — pop-up store, partenariat local — avant d'investir 8 000 000 FCFA. Validez l'adhésion du marché avant de vous engager financièrement à fond."
+  },
+  {
+    "instruction": "Décision nécessaire : digitalisation=a_faire, cout=5000000 FCFA, employes_resistants=oui, concurrence_digitale=forte",
+    "response": "La digitalisation est inévitable face à une concurrence digitale forte — la question n'est pas si mais quand et comment. Pour gérer la résistance des employés, impliquez-les dans le choix des outils et formez-les correctement — la résistance vient souvent de la peur de l'inconnu. Commencez par des outils simples avec un ROI rapide pour démontrer la valeur. Découpez l'investissement en phases pour étaler les 5 000 000 FCFA et réduire le risque."
+  },
+  {
+    "instruction": "Décision nécessaire : client_mauvais_payeur=dette_2500000 FCFA, relation_commerciale=5ans, relance=sans_reponse",
+    "response": "Après 5 ans de relation et une dette de 2 500 000 FCFA sans réponse aux relances, il faut agir formellement. Envoyez une mise en demeure écrite avec un délai de paiement de 15 jours. Si toujours sans réponse, proposez un échelonnement sur 6 mois — il vaut mieux récupérer progressivement que rien du tout. En dernier recours, engagez une procédure de recouvrement. Stoppez également tout crédit supplémentaire à ce client jusqu'à apurement de la dette."
+  },
+  {
+    "instruction": "Décision nécessaire : prix=augmenter_20%, matieres_premieres_en_hausse=oui, clients_sensibles_au_prix=oui",
+    "response": "Une hausse de 20% risque d'être brutale pour des clients sensibles aux prix. Adoptez une stratégie progressive — augmentez de 8 à 10% maintenant en communiquant clairement sur la hausse des matières premières. Puis réévaluez dans 3 mois selon la réaction du marché. Travaillez en parallèle à réduire vos coûts — meilleure négociation fournisseur, réduction des pertes — pour limiter l'impact sur vos marges sans répercuter toute la hausse sur vos clients."
+  },
+  {
+    "instruction": "Décision nécessaire : associate=veut_quitter, parts=50_50, valorisation_entreprise=incertaine",
+    "response": "La sortie d'un associé à 50-50 est un moment critique. Faites d'abord évaluer l'entreprise par un expert comptable indépendant pour avoir une valorisation objective. Négociez une clause de rachat progressive pour étaler le paiement et préserver votre trésorerie. Vérifiez vos statuts pour les clauses de préemption. Si possible, trouvez un nouvel associé avant le départ de l'actuel pour maintenir la stabilité opérationnelle et financière."
+  },
+  {
+    "instruction": "Décision nécessaire : stock_obsolete=300_unites, valeur=1500000 FCFA, espace_occupe=important",
+    "response": "Un stock obsolète de 1 500 000 FCFA immobilisé coûte de l'argent chaque jour en espace et en capital bloqué. Évaluez d'abord si ces produits peuvent être vendus avec une forte remise — même à 50% vous récupérez 750 000 FCFA. Proposez-les à vos clients réguliers en lot, à des revendeurs ou sur des marchés. Si vraiment invendables, provisionnez comptablement la perte et libérez l'espace pour des produits à rotation rapide."
+  },
+  {
+    "instruction": "Décision nécessaire : plainte_client=service_mediocre, employe_concerne=meilleur_vendeur, impact=reputation_en_ligne",
+    "response": "Meilleur vendeur ne signifie pas meilleur employé si le service client est médiocre. Répondez d'abord publiquement à la plainte en ligne de manière professionnelle — cela montre que vous prenez les retours au sérieux. Ensuite, discutez en privé avec votre employé des faits précis sans juger. Mettez en place un plan d'amélioration clair avec des objectifs mesurables. Si le comportement persiste, les conséquences doivent suivre — même pour votre meilleur vendeur."
+  },
+  {
+    "instruction": "Décision nécessaire : investir_publicite=facebook_ads, budget=200000 FCFA, retour_inconnu, activite=6mois",
+    "response": "Pour une activité de 6 mois avec un budget de 200 000 FCFA en Facebook Ads, commencez petit et testez. Allouez 50 000 FCFA sur 2 semaines en testant 3 visuels différents. Mesurez précisément le coût par client acquis. Si le retour est positif — client acquis coûte moins que sa valeur — augmentez progressivement le budget. Facebook Ads peut être très efficace pour les PME locales à Lomé si la cible est bien définie — âge, localisation, centres d'intérêt."
+  },
+  {
+    "instruction": "Décision nécessaire : vendre_entreprise=offre_recue, montant=25000000 FCFA, age_proprietaire=45ans",
+    "response": "À 45 ans avec une offre de 25 000 000 FCFA, c'est une décision profondément personnelle autant que financière. Évaluez d'abord si ce montant correspond à la juste valeur de votre entreprise — consultez un expert. Demandez-vous si vous avez encore l'énergie et la vision pour développer davantage l'entreprise. Considérez les alternatives — vente partielle, associé investisseur. Si vous vendez, négociez une clause d'accompagnement rémunéré de 12 à 24 mois pour assurer la transition et sécuriser votre revenus."
+  },
+  {
+    "instruction": "Décision nécessaire : lancer_nouveau_produit=oui, etude_marche=non_faite, concurrent=absent, budget=limité",
+    "response": "Lancer sans étude de marché est risqué mais pas impossible avec un budget limité. Faites une étude rapide et gratuite — interrogez 20 clients potentiels en face à face sur leurs besoins et leur disposition à payer. Lancez une version minimale du produit à petit volume pour tester le marché réel. L'absence de concurrent est un bon signe mais vérifiez si c'est parce que le marché n'existe pas encore ou parce que personne n'a encore osé. Testez avant d'investir massivement."
+  },
+  {
+    "instruction": "Décision nécessaire : dette_bancaire=10000000 FCFA, taux=18%/an, opportunite_investissement=taux_retour=25%",
+    "response": "Avec un coût de dette à 18% et un retour sur investissement potentiel de 25%, l'écart de 7% semble favorable à l'investissement. Cependant évaluez le risque — le taux de 25% est-il garanti ou estimé ? Si c'est une estimation, appliquez une marge de sécurité et considérez un scénario pessimiste à 15% de retour. Dans ce cas l'investissement devient perdant. Réduisez d'abord votre dette coûteuse avant de vous endetter davantage sauf si l'opportunité est vraiment solide et limitée dans le temps."
+  },
+  {
+    "instruction": "Décision nécessaire : local=achat_vs_location, prix_achat=45000000 FCFA, loyer_mensuel=300000 FCFA",
+    "response": "Au loyer actuel de 300 000 FCFA par mois soit 3 600 000 FCFA par an, vous récupéreriez votre investissement d'achat en 12.5 ans. C'est un délai long. L'achat est intéressant si vous avez la visibilité sur votre activité à long terme dans ce local et si les taux d'intérêt du financement sont inférieurs à votre rentabilité. La location préserve votre flexibilité et votre trésorerie. Consultez un conseiller financier avant de vous engager sur 45 000 000 FCFA."
+  },
+  {
+    "instruction": "Décision nécessaire : crise_reseaux_sociaux=commentaires_negatifs_50, source=concurrent_probablement, impact=ventes_-15%",
+    "response": "Sous une attaque probable de votre concurrent, agissez sur deux fronts simultanément. Sur les réseaux sociaux, répondez professionnellement à chaque commentaire négatif avec des faits — jamais avec agressivité. Mobilisez vos clients fidèles pour partager leurs expériences positives. En parallèle, documentez les preuves d'une campagne organisée et consultez un juriste si les commentaires sont diffamatoires. Une contre-campagne de communication positive sur vos points forts est plus efficace qu'une confrontation directe."
+  },
+  {
+    "instruction": "Décision nécessaire : employe_vol_prouve=oui, montant=150000 FCFA, anciennete=3ans, premier_incident=oui",
+    "response": "Un vol prouvé est une faute grave qui mérite une sanction claire quelle que soit l'ancienneté. Documentez soigneusement les preuves avant d'agir. Convoquez l'employé à un entretien formel en présence d'un témoin, exposez les faits et laissez-le s'expliquer. La décision finale dépend du contexte — difficultés personnelles, remboursement proposé — mais une sanction s'impose pour préserver l'intégrité de votre équipe. Consultez un juriste du travail pour respecter la procédure légale au Togo."
+  }
+]
