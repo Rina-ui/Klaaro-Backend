@@ -7,12 +7,13 @@ import numpy as np
 from pathlib import Path
 
 # Chemins des modèles
+BASE_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 LORA_PATH = "ml/models/klaaro-tinyllama-v2"
 ISOLATION_FOREST_PATH = "ml/models/isolation_forest.pkl"
 XGBOOST_PATH = "ml/models/XGBoost/xgboost_generic.pkl"
 LABEL_ENCODER_PATH = "ml/models/label_encoder.pkl"
 
-class KlaароMLService:
+class KlaaroMLService:
     def __init__(self):
         self.llm = None
         self.tokenizer = None
@@ -45,7 +46,7 @@ class KlaароMLService:
         print("TinyLlama fine-tuné chargé !")
 
     def generate_explanation(self, instruction: str) -> str:
-        prompt = f"<|system|>Tu es Klaaro, un assistant intelligent qui analyse les données business des PME africaines et explique les résultats en français simple.</s><|user|>{instruction}</s><|assistant|>"
+        prompt = f"<|system|>Tu es Klaaro, un assistant intelligent qui analyse les données business et explique les résultats en français simple.</s><|user|>{instruction}</s><|assistant|>"
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.llm.device)
 
@@ -113,4 +114,4 @@ class KlaароMLService:
         return {"predictions": predictions}
 
 # Instance singleton
-ml_service = KlaароMLService()
+ml_service = KlaaroMLService()
