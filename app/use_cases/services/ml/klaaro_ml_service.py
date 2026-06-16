@@ -38,8 +38,9 @@ class KlaaroMLService:
         self.tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
         base_model = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL,
-            dtype=torch.float16,
-            device_map="auto"
+            dtype=torch.float32,
+            device_map="cpu",
+            low_cpu_mem_usage=True
         )
         self.llm = PeftModel.from_pretrained(base_model, LORA_PATH)
         self.llm.eval()
