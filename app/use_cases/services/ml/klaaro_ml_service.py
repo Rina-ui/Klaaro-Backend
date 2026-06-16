@@ -113,5 +113,68 @@ class KlaaroMLService:
 
         return {"predictions": predictions}
 
+# pretraitement
+def preprocess_data(self, df: pd.DataFrame) -> dict:
+    rapport = {
+        "lignes_avant": len(df),
+        "colonnes_avant": list(df.columns),
+        "actions": []
+    }
+
+    df_clean = df.copy()
+
+    # Standardiser les noms de colonnes
+    df_clean.columns = (
+        df_clean.columns
+        .str.strip()
+        .str.lower()
+        .str.replace(' ', '_')
+        .str.normalize('NFKD')
+        .str.encode('ascii', errors='ignore')
+        .str.decode('utf-8')
+    )
+    rapport["actions"].append("Noms de colonnes standardisés")
+
+    # Supprimer les doublons
+    nb_doublons = df_clean.duplicated().sum()
+    if nb_doublons > 0:
+        df_clean = df_clean.drop_duplicates()
+        rapport["actions"].append(f"{nb_doublons} doublons supprimés")
+
+    # Détecter et convertir les colonnes de dates
+    for col in df_clean.columns:
+        if 'date' in col.lower():
+            try:
+                df_clean[col] = pd.to_datetime(df_clean[col], errors='coerce')
+                rapport["actions"].append(f"Colonne '{col}' convertie en date")
+            except:
+                pass
+
+    # Gérer les valeurs manquantes
+    nb_nulls_avant = df_clean.isnull().sum().sum()
+    if nb_nulls_avant > 0:
+        for col in df_clean.columns:
+            if df_clean[col].dtype in ['float64', 'int64']:
+                df_clean[col] = df_clean[col].fillna(df_clean[col].median())
+            else:
+                df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0] if not df_clean[col].mode().empty else "Inconnu")
+        rapport["actions"].append(f"{nb_nulls_avant} valeurs manquantes corrigées")
+
+    # Détecter automatiquement les colonnes numériques mal typées
+    for col in df_clean.columns:
+        if df_clean[col].dtype == 'object':
+            try:
+                df_clean[col] = pd.to_numeric(df_clean[col].str.replace(',', '').str.replace(' ', ''))
+                rapport["actions"].append(f"Colonne '{col}' convertie en numérique")
+            except:
+                pass
+
+    rapport["lignes_apres"] = len(df_clean)
+    rapport["colonnes_apres"] = list(df_clean.columns)
+
+    return {
+        "rapport": rapport,
+        "data": df_clean
+    }
 # Instance singleton
 ml_service = KlaaroMLService()
