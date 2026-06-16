@@ -14,6 +14,7 @@ class DocumentModel(Base):
     taille = Column(Integer, nullable=False)
     content = Column(String, nullable=False)
     upload_date = Column(DateTime, nullable=False)
+    extracted_via_ocr = Column(String, nullable=False)
 
     # ajout de fk
     user_id = Column(String, ForeignKey('user.id'), nullable=False)

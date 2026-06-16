@@ -6,3 +6,4 @@ class TypeDocument(Enum):
     JSON = "json"
     PDF = "pdf"
     XML = "xml"
+    IMAGE = "image"

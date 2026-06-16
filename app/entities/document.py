@@ -12,3 +12,4 @@ class Document:
     taille: int
     content: str
     upload_date: datetime
+    extracted_via_ocr: bool = False
