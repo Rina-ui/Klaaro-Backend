@@ -32,3 +32,16 @@ async def predict_data(file: UploadFile = File(...), target_col: str = "ventes",
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/preprocess")
+async def preprocess_data(file: UploadFile = File(...),
+                          current_user = Depends(get_current_user)):
+    try:
+        df = pd.read_csv(file.file)
+        result = ml_service.preprocess_data(df)
+        return {
+            "rapport": result["rapport"],
+            "apercu_donnees": result["data"].head(10).to_dict('records')
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

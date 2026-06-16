@@ -7,6 +7,8 @@ from app.adapters.routes.reponse_routes import router as response_router
 from app.adapters.routes.enteprise_routes import router as entreprise_router
 from app.adapters.routes.document_routes import router as document_router
 from app.adapters.routes.alerte_routes import router as alert_router
+from app.adapters.routes.ml_route import router as ml_router
+from app.adapters.routes.ocr_route import router as ocr_router
 
 from fastapi import APIRouter
 
@@ -21,3 +23,5 @@ api_router.include_router(entreprise_router)
 api_router.include_router(rapport_router)
 api_router.include_router(requeste_router)
 api_router.include_router(response_router)
+api_router.include_router(ml_router)
+api_router.include_router(ocr_router)
