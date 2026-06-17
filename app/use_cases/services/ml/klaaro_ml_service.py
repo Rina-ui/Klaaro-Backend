@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+from app.infrastructure.cache import get_cached_response, set_cached_response
+
 # Chemins des modèles
 BASE_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 LORA_PATH = "ml/models/klaaro-tinyllama-v2"
@@ -47,6 +49,12 @@ class KlaaroMLService:
         print("TinyLlama fine-tuné chargé !")
 
     def generate_explanation(self, instruction: str) -> str:
+        # Vérifier le cache d'abord
+        cached = get_cached_response(instruction)
+        if cached:
+            return cached
+
+        # Sinon générer normalement
         prompt = f"<|system|>Tu es Klaaro, un assistant intelligent qui analyse les données business et explique les résultats en français simple.</s><|user|>{instruction}</s><|assistant|>"
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.llm.device)
@@ -62,7 +70,12 @@ class KlaaroMLService:
             )
 
         response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return response.split("<|assistant|>")[-1].strip()
+        explanation = response.split("<|assistant|>")[-1].strip()
+
+        # Sauvegarder en cache
+        set_cached_response(instruction, explanation)
+
+        return explanation
 
     def detect_anomalies(self, df: pd.DataFrame) -> dict:
         df_encoded = df.copy()
