@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 import pandas as pd
+
+from app.entities.SecurityQuestionnaire import SecurityQuestionnaire
 from app.use_cases.services.ml.klaaro_ml_service import ml_service
 from app.adapters.dependencies import get_current_user
 
@@ -43,5 +45,14 @@ async def preprocess_data(file: UploadFile = File(...),
             "rapport": result["rapport"],
             "apercu_donnees": result["data"].head(10).to_dict('records')
         }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/security-score")
+def calculate_security(questionnaire: SecurityQuestionnaire,
+                       current_user = Depends(get_current_user)):
+    try:
+        result = ml_service.calculate_security_score(questionnaire.dict())
+        return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

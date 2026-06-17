@@ -177,5 +177,68 @@ def preprocess_data(self, df: pd.DataFrame) -> dict:
         "rapport": rapport,
         "data": df_clean
     }
+
+# Securite critere
+def calculate_security_score(self, reponses: dict) -> dict:
+
+    score = 0
+    details = []
+    recommandations = []
+
+    # Mots de passe
+    points_mdp = 0
+    if reponses.get('mot_de_passe_force', False):
+        points_mdp += 10
+    else:
+        recommandations.append("Utilisez des mots de passe complexes d'au moins 12 caracteres")
+    if reponses.get('mot_de_passe_recent', False):
+        points_mdp += 10
+    else:
+        recommandations.append("Changez vos mots de passe regulierement, au moins tous les 3 mois")
+    score += points_mdp
+    details.append({"critere": "Mots de passe", "score": points_mdp, "max": 20})
+
+    # Mises à jour
+    points_maj = 20 if reponses.get('mises_a_jour_actives', False) else 0
+    if points_maj == 0:
+        recommandations.append("Activez les mises a jour automatiques sur tous vos systemes")
+    score += points_maj
+    details.append({"critere": "Mises a jour", "score": points_maj, "max": 20})
+
+    # Chiffrement
+    points_chiffrement = 20 if reponses.get('donnees_chiffrees', False) else 0
+    if points_chiffrement == 0:
+        recommandations.append("Chiffrez vos donnees sensibles, notamment les informations clients")
+    score += points_chiffrement
+    details.append({"critere": "Chiffrement", "score": points_chiffrement, "max": 20})
+
+    # Accès
+    points_acces = 20 if reponses.get('acces_controles', False) else 0
+    if points_acces == 0:
+        recommandations.append("Limitez les acces selon les roles, ne partagez jamais un compte entre plusieurs employes")
+    score += points_acces
+    details.append({"critere": "Controle des acces", "score": points_acces, "max": 20})
+
+    # Sauvegarde
+    points_sauvegarde = 20 if reponses.get('sauvegarde_quotidienne', False) else 0
+    if points_sauvegarde == 0:
+        recommandations.append("Mettez en place des sauvegardes quotidiennes automatiques de vos donnees")
+    score += points_sauvegarde
+    details.append({"critere": "Sauvegarde", "score": points_sauvegarde, "max": 20})
+
+    # Niveau global
+    if score >= 80:
+        niveau = "Securise"
+    elif score >= 50:
+        niveau = "Moyennement securise"
+    else:
+        niveau = "Vulnerable"
+
+    return {
+        "score_total": score,
+        "niveau": niveau,
+        "details": details,
+        "recommandations": recommandations
+    }
 # Instance singleton
 ml_service = KlaaroMLService()
