@@ -12,7 +12,7 @@ from app.use_cases.services.entreprise.delete_entreprise import DeleteEntreprise
 
 router = APIRouter(prefix="/enterprise", tags=["Enterprises"])
 
-@router.post("/", response_model=EntrepriseResponse, status_code=status.HTTP_21_CREATED)
+@router.post("/", response_model=EntrepriseResponse, status_code=status.HTTP_201_CREATED)
 def create_entreprise(request: EntrepriseRequest, db: Session = Depends(get_db),
                       current_user = Depends(get_current_user)):
     try:

@@ -22,7 +22,7 @@ class CreateEntreprise:
         saved_entreprise = self.entreprise_repository.save_entreprise(entreprise)
 
         # Associer l'entreprise à l'utilisateur qui l'a créée
-        user = self.user_repository.get_user_by_id(user_id)
+        user = self.user_repository.find_by_id(user_id)
         if user:
             user.entreprise_id = saved_entreprise.id
             user.role = "admin"

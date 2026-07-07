@@ -10,41 +10,72 @@ class UserRepositoryImpl(UserRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def save_user(self, user: User):
-        model = UserModel(**user.__dict__)
+    # Fonction utilitaire pour transformer un UserModel (BDD) en User (Entité)
+    def _to_entity(self, model: UserModel) -> User:
+        if not model:
+            return None
+        return User(
+            id=model.id,
+            firstname=model.firstname,
+            lastname=model.lastname,
+            email=model.email,
+            password=model.password,
+            profession=model.profession,
+            role=model.role,
+            account_type=model.account_type,
+            entreprise_id=model.entreprise_id
+        )
+
+    def save_user(self, user: User) -> User:
+        # On extrait proprement les dictionnaires sans chichis
+        model = UserModel(
+            id=user.id,
+            firstname=user.firstname,
+            lastname=user.lastname,
+            email=user.email,
+            password=user.password,
+            profession=user.profession,
+            role=user.role,
+            account_type=user.account_type,
+            entreprise_id=user.entreprise_id
+        )
 
         self.db.add(model)
         self.db.commit()
         self.db.refresh(model)
 
-        return user
+        return self._to_entity(model)
 
     def find_all(self):
-        return self.db.query(UserModel).all()
+        models = self.db.query(UserModel).all()
+        return [self._to_entity(m) for m in models]
 
-    def find_by_email(self, email: str):
-        return (
+    def find_by_email(self, email: str) -> User:
+        model = (
             self.db.query(UserModel).
             filter(UserModel.email == email).
             first()
         )
+        return self._to_entity(model)
 
-    def find_by_firstname(self, firstname: str):
-        return (
-            self.db.query(UserModel)
-            .filter(UserModel.firstname == firstname)
-            .first()
-        )
-
-    def update_user(self, user: User):
-        pass
-
-    def find_by_id(self, user_id: str):
-        return (
+    def find_by_id(self, user_id: str) -> User:
+        model = (
             self.db.query(UserModel)
             .filter(UserModel.id == user_id)
             .first()
         )
+        return self._to_entity(model)
+
+    def find_by_firstname(self, firstname: str) -> User:
+        model = (
+            self.db.query(UserModel)
+            .filter(UserModel.firstname == firstname)
+            .first()
+        )
+        return self._to_entity(model)
+
+    def update_user(self, user: User):
+        pass
 
     def delete_user(self, user_id: str):
         model = (
@@ -56,3 +87,6 @@ class UserRepositoryImpl(UserRepository):
         if model:
             self.db.delete(model)
             self.db.commit()
+
+    def get_user_by_id(self, user_id: str) -> User:
+        return self.find_by_id(user_id)

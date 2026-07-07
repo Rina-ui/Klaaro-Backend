@@ -84,3 +84,8 @@ def delete_user(user_id: str, db: Session = Depends(get_db),
         return {"message": "User deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user = Depends(get_current_user)):
+    return current_user
