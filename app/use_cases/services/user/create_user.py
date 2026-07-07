@@ -11,8 +11,9 @@ class CreateUser:
         self.user_repository = user_repository
 
     def execute(self, firstname: str, lastname: str, email: str,
-                password: str, profession: str, role: str,
-                account_type: AccountType, entreprise_id: str = None) -> User:
+                password: str, profession: str, account_type: AccountType,
+                role: str = "user", entreprise_id: str = None) -> User:
+
         hashed_password = pwd_context.hash(password)
         user = User(
             id=str(uuid.uuid4()),
