@@ -11,4 +11,4 @@ class Alerte:
     type: TypeAlerte
     content: str
     send_date: datetime
-    niveau_gravity: NiveauVul
+    niveau_gravite: NiveauVul

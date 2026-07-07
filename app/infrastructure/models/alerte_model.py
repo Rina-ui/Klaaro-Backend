@@ -13,7 +13,7 @@ class AlerteModel(Base):
     type = Column(Enum(TypeAlerte), nullable=False)
     content = Column(String, nullable=False)
     send_date = Column(DateTime, nullable=False)
-    niveau_gravity = Column(Enum(NiveauVul), nullable=False)
+    niveau_gravite = Column(Enum(NiveauVul), nullable=False)
 
     # ajout de fk
     user_id = Column(String, ForeignKey('user.id'), nullable=False)
