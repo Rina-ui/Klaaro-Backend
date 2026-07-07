@@ -1,17 +1,15 @@
-from pydantic import BaseModel, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, EmailStr
+from typing import Optional
 from app.entities.enum.account_type import AccountType
-from app.entities.enum.role import Role
-
 
 class UserRequest(BaseModel):
     firstname: str
     lastname: str
-    email: str
+    email: EmailStr
     password: str
     profession: str
-    role: Role
     account_type: AccountType
+    role: str = "user"
 
 class UserResponse(BaseModel):
     id: str
@@ -19,7 +17,7 @@ class UserResponse(BaseModel):
     lastname: str
     email: str
     profession: str
-    role: Role
+    role: Optional[str] = "user"
     account_type: AccountType
 
     model_config = ConfigDict(from_attributes=True)

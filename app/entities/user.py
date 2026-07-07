@@ -13,6 +13,6 @@ class User:
     email: str
     password: str
     profession: str
-    role: Role
+    role: str
     account_type: AccountType
     entreprise_id: Optional[str] = None
