@@ -5,7 +5,7 @@ from app.entities.enum.account_type import AccountType
 class UserRequest(BaseModel):
     firstname: str
     lastname: str
-    email: EmailStr
+    email: str
     password: str
     profession: str
     account_type: AccountType

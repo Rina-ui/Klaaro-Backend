@@ -80,7 +80,7 @@ def seed():
             email="koffi@example.com",
             password=pwd_context.hash("password123"),
             profession="Gérant",
-            role=Role.USER,
+            role="user",
             account_type=AccountType.ENTREPRISE,
             entreprise_id=entreprise1.id
         )
@@ -91,7 +91,7 @@ def seed():
             email="ama@example.com",
             password=pwd_context.hash("password123"),
             profession="Data Scientist",
-            role=Role.USER,
+            role="user",
             account_type=AccountType.INDIVIDUAL,
             entreprise_id=None
         )
@@ -102,7 +102,7 @@ def seed():
             email="admin@klaaro.com",
             password=pwd_context.hash("admin123"),
             profession="Administrateur",
-            role=Role.ADMIN,
+            role="user",
             account_type=AccountType.INDIVIDUAL,
             entreprise_id=None
         )
