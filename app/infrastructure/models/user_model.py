@@ -12,6 +12,6 @@ class UserModel(Base):
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
     profession = Column(String, nullable=False)
-    role = Column(Enum(Role), nullable=False)
+    role = Column(Enum(Role), nullable=True)
     account_type = Column(Enum(AccountType), nullable=False)
     entreprise_id = Column(String, ForeignKey('entreprise.id'), nullable=True)
