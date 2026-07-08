@@ -29,18 +29,27 @@ def create_document(request: DocumentRequest, db: Session = Depends(get_db),
             user_id=current_user.id,
         )
     except Exception as e:
+        print("ERREUR UPLOAD BACKEND:", str(e))
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{user_id}", response_model=List[DocumentResponse])
-def get_document(user_id: str, db: Session = Depends(get_db),
-                 current_user = Depends(get_current_user)):
+#On récupère les documents de l'utilisateur connecté via son Token
+@router.get("/", response_model=List[DocumentResponse])
+def get_user_documents(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         repo = DocumentRepositoryImpl(db)
+        # On respecte la Clean Architecture en passant par le Use Case dédié !
         use_case = FindDocumentsByUser(repo)
-        return use_case.execute(user_id)
+
+        documents = use_case.execute(current_user.id)
+
+        if documents is None:
+            return []
+
+        return documents
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @router.delete("/{document_id}")
 def delete_document(document_id: str, db: Session = Depends(get_db),

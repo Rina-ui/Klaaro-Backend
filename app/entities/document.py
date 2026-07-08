@@ -11,5 +11,6 @@ class Document:
     type: TypeDocument
     taille: int
     content: str
+    user_id: str
     upload_date: datetime
     extracted_via_ocr: bool = False

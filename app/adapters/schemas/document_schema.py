@@ -17,6 +17,7 @@ class DocumentResponse(BaseModel):
     type: TypeDocument
     taille: int
     content: str
+    user_id: str
     upload_date: datetime
 
     model_config = ConfigDict(from_attributes=True)

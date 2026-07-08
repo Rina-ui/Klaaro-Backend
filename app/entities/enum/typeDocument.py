@@ -1,6 +1,6 @@
 from enum import Enum
 
-class TypeDocument(Enum):
+class TypeDocument(str, Enum):
     CSV = "csv"
     EXCEL = "excel"
     JSON = "json"
