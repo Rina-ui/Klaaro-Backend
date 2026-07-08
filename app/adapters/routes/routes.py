@@ -10,6 +10,7 @@ from app.adapters.routes.alerte_routes import router as alert_router
 from app.adapters.routes.ml_route import router as ml_router
 from app.adapters.routes.ocr_route import router as ocr_router
 from app.adapters.routes.whatsapp_routes import router as whatsapp_router
+from app.adapters.routes.extern_db_routes import router as extern_db_router
 
 from fastapi import APIRouter
 
@@ -26,3 +27,4 @@ api_router.include_router(requeste_router)
 api_router.include_router(response_router)
 api_router.include_router(ocr_router)
 api_router.include_router(whatsapp_router)
+api_router.include_router(extern_db_router)
