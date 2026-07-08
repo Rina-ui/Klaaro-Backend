@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.adapters.dependencies import get_current_user
 from app.adapters.schemas.document_schema import DocumentResponse, DocumentRequest
@@ -25,13 +26,13 @@ def create_document(request: DocumentRequest, db: Session = Depends(get_db),
             type=request.type,
             taille=request.taille,
             content=request.content,
-            user_id=request.user_id,
+            user_id=current_user.id,
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{user_id}", response_model=DocumentResponse)
+@router.get("/{user_id}", response_model=List[DocumentResponse])
 def get_document(user_id: str, db: Session = Depends(get_db),
                  current_user = Depends(get_current_user)):
     try:
@@ -41,7 +42,7 @@ def get_document(user_id: str, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/{document_id}", response_model=DocumentResponse)
+@router.delete("/{document_id}")
 def delete_document(document_id: str, db: Session = Depends(get_db),
                     current_user = Depends(get_current_user)):
     try:
