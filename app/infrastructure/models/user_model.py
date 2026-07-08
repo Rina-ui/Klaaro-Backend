@@ -1,4 +1,6 @@
 from sqlalchemy import Column, String, Enum, ForeignKey
+from sqlalchemy.orm import relationship
+
 from app.entities.enum.account_type import AccountType
 from app.infrastructure.database import Base
 from app.entities.enum.role import Role
@@ -15,3 +17,5 @@ class UserModel(Base):
     role = Column(String, nullable=False)
     account_type = Column(Enum(AccountType), nullable=False)
     entreprise_id = Column(String, ForeignKey('entreprise.id'), nullable=True)
+
+    entreprise = relationship("EntrepriseModel", back_populates="users"

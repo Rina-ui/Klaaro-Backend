@@ -74,8 +74,24 @@ class UserRepositoryImpl(UserRepository):
         )
         return self._to_entity(model)
 
-    def update_user(self, user: User):
-        pass
+    def update_user(self, user: User) -> User:
+        # 1. On récupère le modèle SQL existant dans la session
+        model = (
+            self.db.query(UserModel)
+            .filter(UserModel.id == user.id)
+            .first()
+        )
+
+        if not model:
+            raise Exception("Utilisateur introuvable pour la mise à jour.")
+
+        # mettre à jour le champ de l'entreprise
+        model.entreprise_id = user.entreprise_id
+        # Si tu as d'autres champs modifiables, tu peux les réassigner ici
+
+        self.db.commit()
+        self.db.refresh(model)
+        return self._to_entity(model)
 
     def delete_user(self, user_id: str):
         model = (
