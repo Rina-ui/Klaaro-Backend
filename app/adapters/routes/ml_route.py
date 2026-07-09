@@ -1,140 +1,152 @@
-# from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
-# import pandas as pd
-#
-# from app.entities.SecurityQuestionnaire import SecurityQuestionnaire
-# from app.use_cases.services.ml.klaaro_ml_service import ml_service
-# from app.adapters.dependencies import get_current_user
-#
-# router = APIRouter(prefix="/ml", tags=["Machine Learning"])
-#
-# @router.post("/analyse-anomalies")
-# async def analyse_anomalies(file: UploadFile = File(...),
-#                             current_user = Depends(get_current_user)):
-#     try:
-#         df = pd.read_csv(file.file)
-#         result = ml_service.detect_anomalies(df)
-#         return result
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#
-# @router.post("/explain")
-# def explain_data(instruction: str, current_user = Depends(get_current_user)):
-#     try:
-#         explanation = ml_service.generate_explanation(instruction)
-#         return {"explanation": explanation}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#
-# @router.post("/predict")
-# async def predict_data(file: UploadFile = File(...), target_col: str = "ventes",
-#                        n_days: int = 30, current_user = Depends(get_current_user)):
-#     try:
-#         df = pd.read_csv(file.file)
-#         result = ml_service.predict(df, target_col, n_days)
-#         return result
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#
-# @router.post("/preprocess")
-# async def preprocess_data(file: UploadFile = File(...),
-#                           current_user = Depends(get_current_user)):
-#     try:
-#         df = pd.read_csv(file.file)
-#         result = ml_service.preprocess_data(df)
-#         return {
-#             "rapport": result["rapport"],
-#             "apercu_donnees": result["data"].head(10).to_dict('records')
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#
-# @router.post("/security-score")
-# def calculate_security(questionnaire: SecurityQuestionnaire,
-#                        current_user = Depends(get_current_user)):
-#     try:
-#         result = ml_service.calculate_security_score(questionnaire.dict())
-#         return result
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, status
+import pandas as pd
+import io
 
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from pypdf import PdfReader
+
 from app.entities.SecurityQuestionnaire import SecurityQuestionnaire
+from app.use_cases.services.ml.klaaro_ml_service import ml_service
 from app.adapters.dependencies import get_current_user
 
 router = APIRouter(prefix="/ml", tags=["Machine Learning"])
 
-@router.post("/analyse-anomalies")
-async def analyse_anomalies(file: UploadFile = File(...),
-                            current_user = Depends(get_current_user)):
-    # Simule le retour de ml_service.detect_anomalies(df)
-    return {
-        "status": "success",
-        "anomalies_detectees": 3,
-        "indices_anomalies": [14, 45, 82],
-        "message": "Analyse terminée. 3 transactions suspectes ont été identifiées dans le fichier envoyé."
-    }
+def _read_file_to_df(file: UploadFile) -> pd.DataFrame:
+    """
+    Transforme dynamiquement du CSV, Excel, XML ou PDF en DataFrame Pandas standard.
+    """
+    filename = file.filename.lower()
+    contents = file.file.read()
+    file.file.seek(0) # Reset le pointeur
 
-@router.post("/explain")
-def explain_data(instruction: str, current_user = Depends(get_current_user)):
-    # Simule le retour de ml_service.generate_explanation(instruction)
-    return {
-        "explanation": (
-            f"Analyse Klaaro pour l'instruction '{instruction}' :\n\n"
-            "Les flux de trésorerie de ce mois montrent une stabilité globale avec une "
-            "légère augmentation des charges d'exploitation sur le dernier trimestre. "
-            "L'optimisation financière recommandée est de lisser les amortissements pour stabiliser le résultat."
+    try:
+        # GESTION EXCEL
+        if filename.endswith(('.xlsx', '.xls')):
+            return pd.read_excel(io.BytesIO(contents))
+
+        # GESTION XML
+        elif filename.endswith('.xml'):
+            # Convertit le XML en liste de dictionnaires automatiquement
+            return pd.read_xml(io.BytesIO(contents))
+
+        # GESTION PDF (Extraction textuelle brute pour validation)
+        elif filename.endswith('.pdf'):
+            reader = PdfReader(io.BytesIO(contents))
+            full_text = ""
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    full_text += text + "\n"
+
+            if not full_text.strip():
+                raise HTTPException(status_code=400, detail="Le fichier PDF est vide ou contient uniquement des images scannées non lisibles.")
+
+            # Pour le PDF, on crée un DataFrame temporaire à une seule colonne de texte.
+            # C'est la méthode `validate_document_structure` du service qui va détecter
+            # si c'est un CV/Mémoire ou des données d'entreprise structurées.
+            lines = [line.strip() for line in full_text.split('\n') if line.strip()]
+            return pd.DataFrame(lines, columns=["texte_brut_pdf"])
+
+        # GESTION CSV (Par défaut)
+        else:
+            try:
+                return pd.read_csv(io.BytesIO(contents))
+            except UnicodeDecodeError:
+                return pd.read_csv(io.BytesIO(contents), encoding='latin-1')
+
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Impossible de parser le fichier {file.filename}: {str(e)}"
         )
-    }
-
-@router.post("/predict")
-async def predict_data(file: UploadFile = File(...), target_col: str = "ventes",
-                       n_days: int = 30, current_user = Depends(get_current_user)):
-    # Simule le retour de ml_service.predict(df, target_col, n_days)
-    return {
-        "target": target_col,
-        "horizon_jours": n_days,
-        "prediction_totale": 1550000,
-        "tendance": "HAUSSE",
-        "confiance": "87%",
-        "evolution_estimee": [
-            {"jour": 10, "valeur": 510000},
-            {"jour": 20, "valeur": 530000},
-            {"jour": 30, "valeur": 550000}
-        ]
-    }
 
 @router.post("/preprocess")
 async def preprocess_data(file: UploadFile = File(...),
                           current_user = Depends(get_current_user)):
-    # Simule le dictionnaire retourné par ml_service.preprocess_data(df)
-    # avec le "rapport" et l'aperçu sous forme de liste de dictionnaires (to_dict('records'))
-    return {
-        "rapport": {
-            "lignes_analysees": 150,
-            "colonnes_trouvees": ["date", "description", "montant", "categorie"],
-            "valeurs_manquantes_corrigees": 4
-        },
-        "apercu_donnees": [
-            {"date": "2026-07-01", "description": "Achat intrants", "montant": 45000, "categorie": "Charges"},
-            {"date": "2026-07-02", "description": "Vente Maïs", "montant": 120000, "categorie": "Produits"},
-            {"date": "2026-07-03", "description": "Transport Lomé", "montant": 15000, "categorie": "Charges"}
-        ]
-    }
+    try:
+        # Transformation magique en DataFrame peu importe le format d'origine !
+        df = _read_file_to_df(file)
+
+        # Le service prend le relais pour valider (bloquer les CV/mémoires PDF) et nettoyer
+        result = ml_service.preprocess_data(df)
+
+        if result.get("status") == "rejected":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result["message"]
+            )
+
+        return {
+            "status": "success",
+            "format_origine": file.filename.split('.')[-1],
+            "rapport": result["rapport"],
+            "chart_data": result["chart_data"],
+            "apercu_donnees": result["data"].head(10).to_dict('records')
+        }
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erreur lors du traitement: {str(e)}")
+
+@router.post("/analyse-anomalies")
+async def analyse_anomalies(file: UploadFile = File(...),
+                            current_user = Depends(get_current_user)):
+    try:
+        df = _read_file_to_df(file)
+
+        # Sécurité : on nettoie d'abord les colonnes avant de passer à l'Isolation Forest
+        prep = ml_service.preprocess_data(df)
+        if prep.get("status") == "rejected":
+            raise HTTPException(status_code=400, detail=prep["message"])
+
+        result = ml_service.detect_anomalies(prep["data"])
+        return result
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/predict")
+async def predict_data(file: UploadFile = File(...), target_col: str = "ventes",
+                       n_days: int = 30, current_user = Depends(get_current_user)):
+    try:
+        df = _read_file_to_df(file)
+
+        # Sécurité : pré-traitement pour standardiser les colonnes (ex: passer de "Ventes" à "ventes")
+        prep = ml_service.preprocess_data(df)
+        if prep.get("status") == "rejected":
+            raise HTTPException(status_code=400, detail=prep["message"])
+
+        result = ml_service.predict(prep["data"], target_col, n_days)
+        return result
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/explain")
+def explain_data(instruction: str, current_user = Depends(get_current_user)):
+    try:
+        # =========================================================================
+        #  PARTIE TINYLLAMA MISE EN COMMENTAIRE POUR ÉVITER LES SATORATIONS RAM/CPU
+        # =========================================================================
+        # explanation = ml_service.generate_explanation(instruction)
+        # return {"explanation": explanation}
+        # =========================================================================
+
+        # Mock temporaire en langage naturel pour le Front-end
+        return {
+            "explanation": "Mode local activé (TinyLlama désactivé). Analyse des barplots et des prédictions opérationnelle."
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/security-score")
 def calculate_security(questionnaire: SecurityQuestionnaire,
                        current_user = Depends(get_current_user)):
-    # Simule le retour de ml_service.calculate_security_score(questionnaire.dict())
-    return {
-        "score_global": 78,
-        "niveau_risque": "FAIBLE",
-        "criteres": {
-            "securite_physique": "Bonne",
-            "gestion_tresorerie": "Moyenne",
-            "conformite_legale": "Excellente"
-        },
-        "recommandations": [
-            "Pensez à diversifier vos canaux d'encaissement (Mobile Money / Espèces) pour limiter les risques.",
-            "Mettez à jour votre registre des recettes de manière hebdomadaire."
-        ]
-    }
+    try:
+        result = ml_service.calculate_security_score(questionnaire.dict())
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

@@ -18,4 +18,4 @@ class UserModel(Base):
     account_type = Column(Enum(AccountType), nullable=False)
     entreprise_id = Column(String, ForeignKey('entreprise.id'), nullable=True)
 
-    entreprise = relationship("EntrepriseModel", back_populates="users"
+    entreprise = relationship("EntrepriseModel", back_populates="users")
