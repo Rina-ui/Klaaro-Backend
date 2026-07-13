@@ -152,16 +152,3 @@ def calculate_security(questionnaire: SecurityQuestionnaire,
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/stats")
-async def get_document_stats(current_user = Depends(get_current_user)):
-    try:
-        # Remplace par ton code réel qui va chercher les documents de l'utilisateur en base
-        # Exemple de structure attendue par ton tableau de bord :
-        return {
-            "uploadedFilesCount": 5,
-            "databaseConnectionsCount": 1,
-            "globalVolume": 1024,
-            "analyses": []
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

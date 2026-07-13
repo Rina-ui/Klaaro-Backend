@@ -25,3 +25,7 @@ class DocumentRepository(ABC):
     @abstractmethod
     def delete_document(self, document_id: str) -> None:
         pass
+
+    @abstractmethod
+    def find_by_user_id(self, user_id: str) -> list[Document]:
+        pass
