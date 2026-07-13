@@ -68,7 +68,7 @@ async def preprocess_data(file: UploadFile = File(...),
         # Transformation magique en DataFrame peu importe le format d'origine !
         df = _read_file_to_df(file)
 
-        # Le service prend le relais pour valider (bloquer les CV/mémoires PDF) et nettoyer
+        # Le service prend le relais pour valider, nettoyer et choisir le graphique
         result = ml_service.preprocess_data(df)
 
         if result.get("status") == "rejected":
@@ -77,12 +77,14 @@ async def preprocess_data(file: UploadFile = File(...),
                 detail=result["message"]
             )
 
+        # On retourne exactement les clés calculées par le service blindé
         return {
             "status": "success",
-            "format_origine": file.filename.split('.')[-1],
-            "rapport": result["rapport"],
+            "format_origine": result.get("format_origine", file.filename.split('.')[-1]),
+            "chart_type": result.get("chart_type", "bar"),
             "chart_data": result["chart_data"],
-            "apercu_donnees": result["data"].head(10).to_dict('records')
+            "rapport": result["rapport"],
+            "apercu_donnees": result["apercu_donnees"]
         }
     except HTTPException as http_ex:
         raise http_ex
@@ -95,12 +97,11 @@ async def analyse_anomalies(file: UploadFile = File(...),
     try:
         df = _read_file_to_df(file)
 
-        # Sécurité : on nettoie d'abord les colonnes avant de passer à l'Isolation Forest
         prep = ml_service.preprocess_data(df)
         if prep.get("status") == "rejected":
             raise HTTPException(status_code=400, detail=prep["message"])
 
-        result = ml_service.detect_anomalies(prep["data"])
+        result = ml_service.detect_anomalies(prep.get("data", df))
         return result
     except HTTPException as http_ex:
         raise http_ex
@@ -150,3 +151,17 @@ def calculate_security(questionnaire: SecurityQuestionnaire,
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/stats")
+async def get_document_stats(current_user = Depends(get_current_user)):
+    try:
+        # Remplace par ton code réel qui va chercher les documents de l'utilisateur en base
+        # Exemple de structure attendue par ton tableau de bord :
+        return {
+            "uploadedFilesCount": 5,
+            "databaseConnectionsCount": 1,
+            "globalVolume": 1024,
+            "analyses": []
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
