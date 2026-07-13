@@ -33,12 +33,20 @@ class KlaaroMLService:
 
     def validate_document_structure(self, df: pd.DataFrame) -> dict:
         """
-        Vrifie si le document est un fichier business ou un texte hors-sujet (CV, mmoire).
+        Vérifie si le document est un tableau de données valide ou un texte hors-sujet (CV, mémoire).
+        Accepte tout type de données tabulaires.
         """
+        if df.empty:
+            return {
+                "valid": False,
+                "reason": "Le fichier téléchargé est vide."
+            }
+
         columns = [str(col).lower().strip() for col in df.columns]
 
-        # Si c'est un PDF converti textuellement ou un tableau suspect à une seule colonne
-        if "texte_brut_pdf" in columns or (len(df.columns) <= 2 and df.dtypes.iloc[0] == 'object'):
+        # 1. Protection contre les documents textuels (CV, Mémoires, Lettres)
+        # Si c'est un PDF converti en texte brut ou un tableau suspect à colonne unique textuelle
+        if "texte_brut_pdf" in columns or len(df.columns) == 1:
             target_col = "texte_brut_pdf" if "texte_brut_pdf" in columns else df.columns[0]
             text_sample = " ".join(df[target_col].iloc[:30].astype(str).tolist()).lower()
 
@@ -46,26 +54,26 @@ class KlaaroMLService:
             if any(word in text_sample for word in cv_keywords):
                 return {
                     "valid": False,
-                    "reason": "Ce document ressemble à un CV, un rapport ou un mémoire. Klaaro n'analyse que les données tabulaires d'entreprise (ventes, stocks, finances)."
+                    "reason": "Ce document ressemble à un CV, un rapport ou un mémoire. Klaaro n'analyse que les données sous forme de tableau."
                 }
 
-        # 2. On vérifie s'il y a au moins une colonne business essentielle
-        business_keywords = ['date', 'montant', 'prix', 'quantite', 'total', 'vente', 'article', 'client', 'ca', 'revenue']
-        has_business_col = any(any(key in col for key in business_keywords) for col in columns)
+        # 2. Validation de la structure tabulaire
+        # Si le fichier a au moins 2 colonnes, c'est un tableau de données (RH, Logistique, Inventaire, etc.), on valide !
+        if len(df.columns) >= 2:
+            return {"valid": True, "reason": "Fichier conforme pour l'analyse."}
 
-        # 3. On regarde s'il y a des colonnes numériques
-        numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
-
-        if len(numeric_cols) == 0 and not has_business_col:
+        # 3. Sécurité pour les fichiers à colonne unique qui ne sont pas des CV mais qui n'ont rien d'exploitable
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        if len(numeric_cols) == 0:
             return {
                 "valid": False,
-                "reason": "Format non supporté. Le fichier ne contient aucune donnée financière ou quantitative exploitable."
+                "reason": "Le fichier ne contient qu'une seule colonne de texte brut et ne peut pas être analysé comme un tableau."
             }
 
         return {"valid": True, "reason": "Fichier conforme pour l'analyse."}
 
     def preprocess_data(self, df: pd.DataFrame) -> dict:
-        """ Nettoie le dataset et prépare les métriques pour les barplots du front """
+        """ Nettoie le dataset et choisit le type de graphique adapté selon la nature des données """
         # D'abord, on valide le document !
         validation = self.validate_document_structure(df)
         if not validation["valid"]:
@@ -102,7 +110,7 @@ class KlaaroMLService:
 
         # Détecter et convertir les colonnes de dates
         for col in df_clean.columns:
-            if 'date' in col.lower():
+            if 'date' in col.lower() or 'mois' in col.lower() or 'annee' in col.lower():
                 try:
                     df_clean[col] = pd.to_datetime(df_clean[col], errors='coerce')
                     rapport["actions"].append(f"Colonne '{col}' convertie en date")
@@ -123,7 +131,9 @@ class KlaaroMLService:
         for col in df_clean.columns:
             if df_clean[col].dtype == 'object':
                 try:
-                    df_clean[col] = pd.to_numeric(df_clean[col].str.replace(',', '').str.replace(' ', ''))
+                    # Enlever les espaces et les virgules pour forcer la conversion
+                    cleaned_col = df_clean[col].astype(str).str.replace(',', '').str.replace(' ', '')
+                    df_clean[col] = pd.to_numeric(cleaned_col)
                     rapport["actions"].append(f"Colonne '{col}' convertie en numérique")
                 except:
                     pass
@@ -131,85 +141,69 @@ class KlaaroMLService:
         rapport["lignes_apres"] = len(df_clean)
         rapport["colonnes_apres"] = list(df_clean.columns)
 
-        #  Extraction automatique des données pour les BARPLOTS du Frontend
+        # SÉLECTION DYNAMIQUE ET ADAPTATIVE DU GRAPHISME
         chart_data = []
-        cat_cols = df_clean.select_dtypes(include=['object']).columns
-        if len(cat_cols) > 0:
-            # On prend la première colonne catégorielle textuelle (ex: type_transaction, region, article)
+        chart_type = "bar" # Type par défaut
+
+        num_cols = df_clean.select_dtypes(include=['float64', 'int64']).columns.tolist()
+        cat_cols = df_clean.select_dtypes(include=['object', 'string']).columns.tolist()
+        date_cols = df_clean.select_dtypes(include=['datetime64[ns]']).columns.tolist()
+
+        # Scénario 1 : Série Temporelle / Évolution -> LINE CHART
+        if len(date_cols) > 0 and len(num_cols) > 0:
+            chart_type = "line"
+            date_target = date_cols[0]
+            num_target = num_cols[0]
+
+            # Agrégation par jour ou par mois pour éviter la surcharge visuelle
+            df_grouped = df_clean.groupby(df_clean[date_target].dt.date)[num_target].sum().reset_index().tail(15)
+            chart_data = [
+                {"name": str(row[date_target]), "valeur": float(row[num_target])}
+                for _, row in df_grouped.iterrows()
+            ]
+
+        # Scénario 2 : Deux variables numériques / Corrélations -> SCATTER CHART
+        elif len(num_cols) >= 2:
+            chart_type = "scatter"
+            x_target = num_cols[0]
+            y_target = num_cols[1]
+
+            # Échantillonnage à 30 points max pour la clarté du nuage
+            df_sampled = df_clean.head(30)
+            chart_data = [
+                {"name": str(row[x_target]), "valeur": float(row[y_target])}
+                for _, row in df_sampled.iterrows()
+            ]
+
+        # Scénario 3 : Répartition de parts / Faible cardinalité -> PIE CHART
+        elif len(cat_cols) > 0 and df_clean[cat_cols[0]].nunique() <= 4:
+            chart_type = "pie"
             target_col = cat_cols[0]
-            counts = df_clean[target_col].value_counts().head(5)
+            counts = df_clean[target_col].value_counts()
             chart_data = [{"name": str(k), "valeur": int(v)} for k, v in counts.items()]
+
+        # Scénario 4 : Comptage par défaut / Cardinalités moyennes -> BAR CHART
+        elif len(cat_cols) > 0:
+            chart_type = "bar"
+            target_col = cat_cols[0]
+            counts = df_clean[target_col].value_counts().head(6)
+            chart_data = [{"name": str(k), "valeur": int(v)} for k, v in counts.items()]
+
+        # Secours : Si tout est numérique sans axe temporel, faire un histogramme en barres
+        elif len(num_cols) > 0:
+            chart_type = "bar"
+            target_col = num_cols[0]
+            counts = df_clean[target_col].value_counts().head(6)
+            chart_data = [{"name": f"Val: {k}", "valeur": int(v)} for k, v in counts.items()]
 
         return {
             "status": "success",
+            "format_origine": "csv",
+            "chart_type": chart_type,
+            "chart_data": chart_data,
             "rapport": rapport,
-            "chart_data": chart_data,  # Directement utilisable par Recharts / Chart.js
-            "data": df_clean
+            "apercu_donnees": df_clean.head(5).to_dict(orient="records")
         }
-
-    def detect_anomalies(self, df: pd.DataFrame) -> dict:
-        if self.isolation_forest is None:
-            return {"nb_anomalies": 0, "anomalies": [], "message": "Modèle Isolation Forest non disponible."}
-
-        df_encoded = df.copy()
-        if 'type_transaction' in df_encoded.columns and self.label_encoder:
-            df_encoded['type_transaction_encoded'] = self.label_encoder.transform(
-                df_encoded['type_transaction']
-            )
-
-        features = ['montant', 'quantite', 'heure', 'type_transaction_encoded']
-        # Sécurité : on garde uniquement les features disponibles dans le tableau actuel
-        available_features = [f for f in features if f in df_encoded.columns]
-
-        if len(available_features) < 2:
-            return {"nb_anomalies": 0, "anomalies": [], "message": "Colonnes insuffisantes pour exécuter l'Isolation Forest."}
-
-        X = df_encoded[available_features]
-        predictions = self.isolation_forest.predict(X)
-        anomalies = df[predictions == -1]
-
-        return {
-            "nb_anomalies": len(anomalies),
-            "anomalies": anomalies.to_dict('records')[:10],  # On limite à 10 pour l'affichage front
-            "is_anomalie": (predictions == -1).tolist()
-        }
-
-    def predict(self, df: pd.DataFrame, target_col: str, n_days: int = 30) -> dict:
-        if self.xgboost is None:
-            return {"predictions": [], "message": "Modèle XGBoost non disponible."}
-
-        features = ['jour_semaine', 'mois', 'jour_mois', 'trimestre',
-                    'annee', 'semaine', 'lag_1', 'lag_7', 'lag_30',
-                    'moyenne_7j', 'moyenne_30j']
-
-        if target_col not in df.columns or 'date' not in df.columns:
-            return {"predictions": [], "message": f"La colonne cible '{target_col}' ou la colonne 'date' est manquante."}
-
-        last_values = df[target_col].values.tolist()
-        last_date = pd.to_datetime(df['date'].iloc[-1])
-        predictions = []
-
-        for i in range(n_days):
-            next_date = last_date + pd.Timedelta(days=i+1)
-            features_dict = {
-                'jour_semaine': next_date.dayofweek,
-                'mois': next_date.month,
-                'jour_mois': next_date.day,
-                'trimestre': next_date.quarter,
-                'annee': next_date.year,
-                'semaine': next_date.isocalendar()[1],
-                'lag_1': last_values[-1],
-                'lag_7': last_values[-7] if len(last_values) >= 7 else last_values[0],
-                'lag_30': last_values[-30] if len(last_values) >= 30 else last_values[0],
-                'moyenne_7j': np.mean(last_values[-7:]),
-                'moyenne_30j': np.mean(last_values[-30:])
-            }
-            X_pred = pd.DataFrame([features_dict])
-            pred = float(self.xgboost.predict(X_pred)[0])
-            predictions.append({'date': str(next_date.date()), target_col: pred})
-            last_values.append(pred)
-
-        return {"predictions": predictions}
 
     def calculate_security_score(self, reponses: dict) -> dict:
         score = 0
