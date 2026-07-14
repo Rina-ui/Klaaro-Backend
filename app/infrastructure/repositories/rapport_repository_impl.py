@@ -42,3 +42,11 @@ class RapportRepositoryImpl(RapportRepository):
         if model:
             self.db.delete(model)
             self.db.commit()
+
+    def find_by_user_id(self, user_id: str):
+        return (
+            self.db.query(RapportModel)
+            .filter(RapportModel.user_id == user_id)
+            .order_by(RapportModel.date_generation.desc())
+            .all()
+        )

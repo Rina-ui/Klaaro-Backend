@@ -25,3 +25,7 @@ class AlerteRepository(ABC):
     @abstractmethod
     def delete(self, alerte_id: str) -> None:
         pass
+
+    @abstractmethod
+    def find_by_user_id(self, user_id: str):
+        pass

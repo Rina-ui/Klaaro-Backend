@@ -30,3 +30,11 @@ class AlerteRepositoryImpl(AlerteRepository):
         model = self.db.query(AlerteModel).filter(AlerteModel.id == alerte_id).first()
         self.db.delete(model)
         self.db.commit()
+
+    def find_by_user_id(self, user_id: str):
+        return (
+            self.db.query(AlerteModel)
+            .filter(AlerteModel.user_id == user_id)
+            .order_by(AlerteModel.send_date.desc())
+            .all()
+        )

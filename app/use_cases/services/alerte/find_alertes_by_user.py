@@ -5,4 +5,4 @@ class FindAlertesByUser:
         self.alerte_repository = alerte_repository
 
     def execute(self, user_id: str):
-        return self.alerte_repository.find_by_id(user_id)
+        return self.alerte_repository.find_by_user_id(user_id)

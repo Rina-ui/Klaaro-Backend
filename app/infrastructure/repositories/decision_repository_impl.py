@@ -41,3 +41,10 @@ class DecisionRepositoryImpl(DecisionRepository):
         if model:
             self.db.delete(model)
             self.db.commit()
+
+    def find_by_user_id(self, user_id: str):
+        return (
+            self.db.query(DecisionModel)
+            .filter(DecisionModel.user_id == user_id)
+            .all()
+        )

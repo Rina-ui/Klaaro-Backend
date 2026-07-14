@@ -25,3 +25,7 @@ class RapportRepository(ABC):
     @abstractmethod
     def delete_rapport(self, rapport_id: str) -> None:
         pass
+
+    @abstractmethod
+    def find_by_user_id(self, user_id: str):
+        pass

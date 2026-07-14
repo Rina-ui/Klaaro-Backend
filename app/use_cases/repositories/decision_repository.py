@@ -24,3 +24,7 @@ class DecisionRepository(ABC):
     @abstractmethod
     def delete_decision(self, decision_id: str) -> None:
         pass
+
+    @abstractmethod
+    def find_by_user_id(self, user_id: str):
+        pass

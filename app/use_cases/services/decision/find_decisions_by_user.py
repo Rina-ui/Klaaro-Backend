@@ -5,4 +5,4 @@ class FindDecisionsByUser:
         self.decision_repository = decision_repository
 
     def execute(self, user_id: str):
-        return self.decision_repository.find_decision_by_id(user_id)
+        return self.decision_repository.find_by_user_id(user_id)
