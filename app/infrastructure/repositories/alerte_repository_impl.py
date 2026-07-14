@@ -9,18 +9,21 @@ class AlerteRepositoryImpl(AlerteRepository):
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def save (self, alerte: Alerte):
+    def save(self, alerte: Alerte):
         model = AlerteModel(**alerte.__dict__)
         self.db.add(model)
         self.db.commit()
         self.db.refresh(model)
         return alerte
 
-    def find_by_id(self, alerte_id: str) :
+    def update_alert(self, alerte: Alerte):
+        pass
+
+    def find_by_id(self, alerte_id: str):
         return (
             self.db.query(AlerteModel)
-            .filter(AlerteModel.id == alerte_id).
-            first()
+            .filter(AlerteModel.id == alerte_id)
+            .first()
         )
 
     def find_all(self):

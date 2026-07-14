@@ -63,15 +63,20 @@ def delete_document(document_id: str, db: Session = Depends(get_db),
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/stats")
-async def get_document_stats(current_user = Depends(get_current_user)):
+def get_document_stats(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        # Remplace par ton code réel qui va chercher les documents de l'utilisateur en base
-        # Exemple de structure attendue par ton tableau de bord :
+        repo = DocumentRepositoryImpl(db)
+        use_case = FindDocumentsByUser(repo)
+        documents = use_case.execute(current_user.id) or []
+
+        images = [d for d in documents if d.type == "image"]
+
         return {
-            "uploadedFilesCount": 5,
-            "databaseConnectionsCount": 1,
-            "globalVolume": 1024,
-            "analyses": []
+            "uploadedFilesCount": len(documents),
+            "uploadedFilesTrend": 0,
+            "databaseConnectionsCount": 0,
+            "scannedPhotosCount": len(images),
+            "scannedPhotosMax": 50,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
