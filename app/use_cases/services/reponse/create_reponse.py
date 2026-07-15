@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime
+
+from app.entities.enum.typeReponse import TypeReponse
 from app.entities.reponse import Reponse
 from app.use_cases.repositories.reponse_repository import ReponseRepository
 
@@ -7,7 +9,7 @@ class CreateReponse:
     def __init__(self, reponse_repository: ReponseRepository):
         self.reponse_repository = reponse_repository
 
-    def execute(self, type: str, content: str, source: str, requete_id: str) -> Reponse:
+    def execute(self, type: TypeReponse, content: str, source: str, requete_id: str) -> Reponse:
         reponse = Reponse(
             id=str(uuid.uuid4()),
             type=type,

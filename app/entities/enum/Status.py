@@ -1,8 +1,6 @@
 from enum import Enum
 
-
-class Status(Enum):
-    Detected = "Detected"
-    pending = "Pending"
-    treatment = "Treatment"
-    done = "Done"
+class Status(str, Enum):
+    SUGGEREE = "suggeree"
+    APPROUVEE = "approuvee"
+    REJETEE = "rejetee"    

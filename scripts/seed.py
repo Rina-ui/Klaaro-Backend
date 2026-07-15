@@ -1,8 +1,10 @@
 import sys
 import os
+
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 import uuid
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -17,6 +19,11 @@ from app.infrastructure.models.requete_model import RequeteModel
 from app.infrastructure.models.reponse_model import ReponseModel
 from app.infrastructure.models.vulnerabilite_model import VulnerabiliteModel
 from app.infrastructure.models.decision_model import DecisionModel
+from app.infrastructure.models.database_model import DatabaseConnectionModel
+
+
+# Importation de TOUTES tes Enums
+from app.entities.enum.typeRapport import TypeRapport
 from app.entities.enum.role import Role
 from app.entities.enum.account_type import AccountType
 from app.entities.enum.typeAlerte import TypeAlerte
@@ -25,6 +32,10 @@ from app.entities.enum.Status import Status
 from app.entities.enum.typeDocument import TypeDocument
 from app.entities.enum.typeRequete import TypeRequete
 from app.entities.enum.typeVulnerabilite import TypeVulnerabilite
+from app.entities.enum.typeReponse import TypeReponse
+
+# AJOUT de ton enum DBType
+from app.entities.enum.dbType import DBType
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -38,7 +49,7 @@ def seed():
 
     with Session(engine) as db:
 
-        # Nettoyer les tables dans le bon ordre
+        # Nettoyer les tables dans le bon ordre (les clés étrangères d'abord)
         db.query(DecisionModel).delete()
         db.query(VulnerabiliteModel).delete()
         db.query(ReponseModel).delete()
@@ -46,6 +57,7 @@ def seed():
         db.query(RapportModel).delete()
         db.query(AlerteModel).delete()
         db.query(DocumentModel).delete()
+        db.query(DatabaseConnectionModel).delete()  # AJOUT du nettoyage
         db.query(UserModel).delete()
         db.query(EntrepriseModel).delete()
         db.commit()
@@ -80,7 +92,7 @@ def seed():
             email="koffi@example.com",
             password=pwd_context.hash("password123"),
             profession="Gérant",
-            role="user",
+            role=Role.USER.value,  # <--- AJOUTE .value ICI (ou met "user")
             account_type=AccountType.ENTREPRISE,
             entreprise_id=entreprise1.id
         )
@@ -91,7 +103,7 @@ def seed():
             email="ama@example.com",
             password=pwd_context.hash("password123"),
             profession="Data Scientist",
-            role="user",
+            role=Role.USER.value,  # <--- AJOUTE .value ICI (ou met "user")
             account_type=AccountType.INDIVIDUAL,
             entreprise_id=None
         )
@@ -102,7 +114,7 @@ def seed():
             email="admin@klaaro.com",
             password=pwd_context.hash("admin123"),
             profession="Administrateur",
-            role="user",
+            role=Role.ADMIN.value,  # <--- AJOUTE .value ICI (ou met "admin")
             account_type=AccountType.INDIVIDUAL,
             entreprise_id=None
         )
@@ -110,7 +122,37 @@ def seed():
         db.commit()
         print("Users créés")
 
+        # ===== CONNEXIONS BASES DE DONNÉES =====
+        db_connections = [
+            DatabaseConnectionModel(
+                id=str(uuid.uuid4()),
+                name="PostgreSQL Production",
+                db_type=DBType.POSTGRESQL if hasattr(DBType, "POSTGRESQL") else list(DBType)[0], # fallback de sécurité
+                host="12.34.56.78",
+                port=5432,
+                username="adawlato_prod",
+                password="supersecurepassword",
+                database_name="adawlato_db",
+                user_id=user1.id
+            ),
+            DatabaseConnectionModel(
+                id=str(uuid.uuid4()),
+                name="MySQL Analytics",
+                db_type=DBType.MYSQL if hasattr(DBType, "MYSQL") else list(DBType)[0],
+                host="87.65.43.21",
+                port=3306,
+                username="ama_analyst",
+                password="anothersecurepassword",
+                database_name="ama_data",
+                user_id=user2.id
+            )
+        ]
+        db.add_all(db_connections)
+        db.commit()
+        print("Connexions BDD créées")
+
         # ===== DOCUMENTS =====
+        now = datetime.now()
         documents = [
             DocumentModel(
                 id=str(uuid.uuid4()),
@@ -118,7 +160,7 @@ def seed():
                 type=TypeDocument.CSV,
                 taille=1024,
                 content="date,produit,montant\n2024-03-01,Riz,50000\n2024-03-02,Huile,30000",
-                upload_date=datetime.utcnow() - timedelta(days=5),
+                upload_date=now - timedelta(days=5),
                 user_id=user1.id,
                 extracted_via_ocr=False
             ),
@@ -128,7 +170,7 @@ def seed():
                 type=TypeDocument.EXCEL,
                 taille=2048,
                 content="produit,quantite,prix_unitaire\nRiz,500,5000\nHuile,200,3000",
-                upload_date=datetime.utcnow() - timedelta(days=2),
+                upload_date=now - timedelta(days=2),
                 user_id=user1.id,
                 extracted_via_ocr=False
             ),
@@ -138,7 +180,7 @@ def seed():
                 type=TypeDocument.IMAGE,
                 taille=512,
                 content="Facture Fournisseur - Montant: 150000 FCFA - Date: 15/03/2024",
-                upload_date=datetime.utcnow() - timedelta(days=1),
+                upload_date=now - timedelta(days=1),
                 user_id=user1.id,
                 extracted_via_ocr=True
             ),
@@ -153,7 +195,7 @@ def seed():
                 id=str(uuid.uuid4()),
                 type=TypeAlerte.ANOMALIE_FINANCIERE,
                 content="Transaction suspecte de 3 500 000 FCFA détectée à 2h du matin",
-                send_date=datetime.utcnow() - timedelta(hours=5),
+                send_date=now - timedelta(hours=5),
                 niveau_gravite=NiveauVul.Critique,
                 user_id=user1.id
             ),
@@ -161,7 +203,7 @@ def seed():
                 id=str(uuid.uuid4()),
                 type=TypeAlerte.PIC_DONNEES,
                 content="Vos ventes ont augmenté de 12% cette semaine — continuez sur cette lancée !",
-                send_date=datetime.utcnow() - timedelta(days=1),
+                send_date=now - timedelta(days=1),
                 niveau_gravite=NiveauVul.Moyenne,
                 user_id=user1.id
             ),
@@ -169,7 +211,7 @@ def seed():
                 id=str(uuid.uuid4()),
                 type=TypeAlerte.ANOMALIE_VENTES,
                 content="Stock de riz parfumé en rupture dans 3 jours au rythme actuel",
-                send_date=datetime.utcnow() - timedelta(hours=12),
+                send_date=now - timedelta(hours=12),
                 niveau_gravite=NiveauVul.Moyenne,
                 user_id=user1.id
             ),
@@ -181,16 +223,16 @@ def seed():
         # ===== REQUETES =====
         requete1 = RequeteModel(
             id=str(uuid.uuid4()),
-            type=TypeRequete.ANALYSE,
+            type=TypeRequete.VULGARISATION,
             content="Comment vont mes ventes ce mois ?",
-            send_date=datetime.utcnow() - timedelta(hours=2),
+            send_date=now - timedelta(hours=2),
             user_id=user1.id
         )
         requete2 = RequeteModel(
             id=str(uuid.uuid4()),
-            type=TypeRequete.PREDICTION,
+            type=TypeRequete.VULGARISATION,
             content="Prédit mes ventes pour les 30 prochains jours",
-            send_date=datetime.utcnow() - timedelta(days=1),
+            send_date=now - timedelta(days=1),
             user_id=user1.id
         )
         db.add_all([requete1, requete2])
@@ -201,17 +243,17 @@ def seed():
         reponses = [
             ReponseModel(
                 id=str(uuid.uuid4()),
-                type="analyse",
+                type=TypeReponse.EXPLICATION,
                 content="Vos ventes de mars s'élèvent à 450 000 FCFA, en hausse de 12% par rapport à février. Votre meilleur jour a été le vendredi 14 avec 45 000 FCFA.",
-                received_at=datetime.utcnow() - timedelta(hours=2),
+                received_at=now - timedelta(hours=2),
                 received_by="TinyLlama",
                 requete_id=requete1.id
             ),
             ReponseModel(
                 id=str(uuid.uuid4()),
-                type="prediction",
+                type=TypeReponse.EXPLICATION,
                 content="Selon vos données historiques, vos ventes devraient atteindre 185 000 FCFA la semaine prochaine. Tendance stable avec une légère hausse le vendredi.",
-                received_at=datetime.utcnow() - timedelta(days=1),
+                received_at=now - timedelta(days=1),
                 received_by="XGBoost + TinyLlama",
                 requete_id=requete2.id
             ),
@@ -224,18 +266,18 @@ def seed():
         rapports = [
             RapportModel(
                 id=str(uuid.uuid4()),
-                type="mensuel",
+                type=TypeRapport.PREPROCESSING,  # <--- Utilise l'Enum ici
                 content="Rapport mars 2024 : CA=450000 FCFA, Marge=18%, Meilleur produit=Riz parfumé, Anomalies=2",
                 periode="Mars 2024",
-                date_generation=datetime.utcnow() - timedelta(days=3),
+                date_generation=now - timedelta(days=3),
                 user_id=user1.id
             ),
             RapportModel(
                 id=str(uuid.uuid4()),
-                type="hebdomadaire",
+                type=TypeRapport.PREPROCESSING,  # <--- Et ici
                 content="Semaine du 8 au 14 avril : CA=112000 FCFA, +5% vs semaine précédente",
                 periode="Semaine 15 - 2024",
-                date_generation=datetime.utcnow() - timedelta(days=1),
+                date_generation=now - timedelta(days=1),
                 user_id=user1.id
             ),
         ]
@@ -243,15 +285,15 @@ def seed():
         db.commit()
         print("Rapports créés")
 
-            # ===== VULNERABILITES =====
+        # ===== VULNERABILITES =====
         vulnerabilites = [
             VulnerabiliteModel(
                 id=str(uuid.uuid4()),
                 type=TypeVulnerabilite.DONNEES_EXPOSEES,
                 niveau=NiveauVul.Critique,
                 description="Données clients stockées en clair dans un fichier Excel accessible à tous les employés",
-                date_detected=datetime.now(UTC) - timedelta(days=2), #
-                status=Status.Detected,
+                date_detected=now - timedelta(days=2),
+                status=Status.DETECTED if hasattr(Status, "DETECTED") else Status.SUGGEREE,
                 user_id=user1.id
             ),
             VulnerabiliteModel(
@@ -259,8 +301,8 @@ def seed():
                 type=TypeVulnerabilite.ACCES_NON_AUTORISE,
                 niveau=NiveauVul.Moyenne,
                 description="3 tentatives de connexion échouées détectées sur le compte admin en 5 minutes",
-                date_detected=datetime.utcnow() - timedelta(hours=6),
-                status=Status.pending,
+                date_detected=now - timedelta(hours=6),
+                status=Status.SUGGEREE,
                 user_id=user1.id
             ),
         ]
@@ -274,17 +316,19 @@ def seed():
                 id=str(uuid.uuid4()),
                 content="Augmenter le stock de riz parfumé de 200 unités",
                 description="Suite à l'analyse des ventes, le riz parfumé représente 35% du CA. Une augmentation du stock s'impose avant la période de fête.",
-                date=datetime.now(UTC) - timedelta(days=1),
-                status=Status.done,
-                user_id=user1.id
+                date=now - timedelta(days=1),
+                status=Status.SUGGEREE,
+                user_id=user1.id,
+                reponse_id=reponses[0].id  # <--- Lie la décision à la première réponse
             ),
             DecisionModel(
                 id=str(uuid.uuid4()),
                 content="Chiffrer les données clients",
                 description="Suite à la détection d'une faille de sécurité, les données clients doivent être chiffrées immédiatement.",
-                date=datetime.now(UTC) - timedelta(hours=3),
-                status=Status.pending,
-                user_id=user1.id
+                date=now - timedelta(hours=3),
+                status=Status.SUGGEREE,
+                user_id=user1.id,
+                reponse_id=reponses[1].id  # <--- Lie la décision à la deuxième réponse
             ),
         ]
         db.add_all(decisions)

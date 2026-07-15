@@ -1,14 +1,9 @@
-from datetime import datetime
-
 from sqlalchemy import Column, Enum, String, DateTime, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, relationship
-
+from sqlalchemy.orm import relationship
 from app.entities.enum.Status import Status
 from app.infrastructure.database import Base
 
-
 class DecisionModel(Base):
-
     __tablename__ = 'decision'
 
     id = Column(String, primary_key=True)
@@ -17,5 +12,10 @@ class DecisionModel(Base):
     status = Column(Enum(Status), nullable=False)
     date = Column(DateTime, nullable=False)
 
-    # ajout de fk
+    # Clés Étrangères
     user_id = Column(String, ForeignKey('user.id'), nullable=False)
+    reponse_id = Column(String, ForeignKey('reponse.id'), nullable=False)
+
+    # Relations
+    user = relationship("UserModel", back_populates="decisions")
+    reponse = relationship("ReponseModel", back_populates="decisions")

@@ -1,4 +1,7 @@
 from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, Boolean
+# AJOUT de relationship dans l'importation
+from sqlalchemy.orm import relationship
+
 from app.entities.enum.typeDocument import TypeDocument
 from app.infrastructure.database import Base
 
@@ -15,3 +18,6 @@ class DocumentModel(Base):
 
     # clé étrangère
     user_id = Column(String, ForeignKey('user.id'), nullable=False)
+
+    # AJOUT de la relation inverse vers UserModel
+    user = relationship("UserModel", back_populates="documents")

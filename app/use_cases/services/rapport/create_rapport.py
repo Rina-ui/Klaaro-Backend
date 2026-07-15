@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime
+
+from app.entities.enum.typeRapport import TypeRapport
 from app.entities.rapport import Rapport
 from app.use_cases.repositories.rapport_repository import RapportRepository
 
@@ -7,7 +9,7 @@ class CreateRapport:
     def __init__(self, rapport_repository: RapportRepository):
         self.rapport_repository = rapport_repository
 
-    def execute(self, type: str, content: str, periode: str, user_id: str) -> Rapport:
+    def execute(self, type: TypeRapport, content: str, periode: str, user_id: str) -> Rapport:
         rapport = Rapport(
             id=str(uuid.uuid4()),
             type=type,

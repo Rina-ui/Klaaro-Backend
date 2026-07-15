@@ -1,6 +1,5 @@
 from typing import List
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.adapters.dependencies import get_current_user
@@ -12,12 +11,16 @@ from app.use_cases.services.rapport.find_rapports_by_user import FindRapportsByU
 
 router = APIRouter(
     prefix="/rapports",
-    tags=["rapports"]
+    tags=["Rapports"]
 )
 
-@router.post("/", response_model=RapportResponse)
-def create_rapport(request: RapportRequest, db: Session = Depends(get_db),
-                   current_user = Depends(get_current_user)):
+# 1. CRÉATION D'UN RAPPORT
+@router.post("/", response_model=RapportResponse, status_code=status.HTTP_201_CREATED)
+def create_rapport(
+        request: RapportRequest,
+        db: Session = Depends(get_db),
+        current_user = Depends(get_current_user)
+):
     try:
         repo = RapportRepositoryImpl(db)
         use_case = CreateRapport(repo)
@@ -30,8 +33,12 @@ def create_rapport(request: RapportRequest, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/user/{user_id}", response_model=List[RapportResponse])
-def get_rapports_by_user(user_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+# 2. RÉCUPÉRATION DES RAPPORTS DE L'UTILISATEUR CONNECTÉ
+@router.get("/me", response_model=List[RapportResponse])
+def get_my_rapports(
+        current_user = Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
     try:
         repo = RapportRepositoryImpl(db)
         use_case = FindRapportsByUser(repo)

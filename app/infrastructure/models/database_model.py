@@ -1,4 +1,6 @@
 from sqlalchemy import Column, String, Integer, Enum, ForeignKey
+from sqlalchemy.orm import relationship
+
 from app.infrastructure.database import Base
 from app.entities.enum.dbType import DBType
 
@@ -15,3 +17,5 @@ class DatabaseConnectionModel(Base):
     database_name = Column(String, nullable=False)
 
     user_id = Column(String, ForeignKey('user.id'), nullable=False)
+
+    user = relationship("UserModel", back_populates="database_connections")
