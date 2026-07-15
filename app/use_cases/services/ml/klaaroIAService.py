@@ -45,13 +45,13 @@ class KlaaroAIService:
         # 1. On crée une instruction qui ressemble à 100% à celles de ton dataset
         # Exemple d'instruction dans ton dataset : "Analyse : chiffre_affaires=2500000 FCFA, ..."
         instruction = f"Analyse : {query_content}. Contexte et données : {report_content}"
-
+    
         # 2. Structure brute sans Chat Template (pour éviter que TinyLlama Chat ne reprenne le dessus avec ses tirets)
         prompt = f"instruction: {instruction}\nresponse: "
-
+    
         # On encode l'invite
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-
+    
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
@@ -60,28 +60,28 @@ class KlaaroAIService:
                 do_sample=True,
                 repetition_penalty=1.15
             )
-
+    
         # On extrait la génération de l'IA
         decoded_output = self.tokenizer.decode(outputs[0][len(inputs["input_ids"][0]):], skip_special_tokens=True)
-
+    
         # On nettoie les résidus de formatage s'il y en a
         clean_response = decoded_output.split("instruction:")[0].split("response:")[0].strip()
-
+    
         print("--- SORTIE DE TON MODÈLE FINE-TUNÉ ---")
         print(clean_response)
         print("---------------------------------------")
-
+    
         # Extraction d'une action pour l'interface utilisateur
         action_suggeree = "Appliquer les recommandations"
         description_action = "Suivre les conseils générés par l'analyse ci-dessus."
-
+    
         phrases = [p.strip() for p in clean_response.replace("!", ".").split(".") if p.strip()]
         if phrases:
             derniere_phrase = phrases[-1]
             if len(derniere_phrase) < 120 and any(v in derniere_phrase.lower() for v in ["vérifiez", "analysez", "anticipez", "passez", "identifiez", "adaptez", "assurez-vous", "optimisez", "négociez", "bloquez"]):
                 action_suggeree = "Action recommandée"
                 description_action = derniere_phrase
-
+    
         return {
             "explication": clean_response,
             "decisions": [
