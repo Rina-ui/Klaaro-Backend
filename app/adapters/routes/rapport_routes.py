@@ -31,6 +31,11 @@ def create_rapport(
             user_id=current_user.id,
         )
     except Exception as e:
+        # Ajoute ce print pour voir l'erreur exacte dans ta console de terminal !
+        import traceback
+        print("--- ERREUR DANS CREATE_RAPPORT ---")
+        traceback.print_exc()
+        print("---------------------------------")
         raise HTTPException(status_code=400, detail=str(e))
 
 # 2. RÉCUPÉRATION DES RAPPORTS DE L'UTILISATEUR CONNECTÉ

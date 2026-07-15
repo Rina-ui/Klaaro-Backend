@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Any
 from app.entities.enum.typeRequete import TypeRequete
 from app.entities.enum.Status import Status
 
@@ -33,10 +33,10 @@ class ReponseResponse(BaseModel):
 
 # --- SCHÉMA DE CRÉATION DE LA REQUÊTE ---
 class RequeteCreate(BaseModel):
-    type: TypeRequete = Field(..., example=TypeRequete.ANALYSE)
+    type: str = Field(..., example="CHAT_LIBRE")  # str pour accepter l'envoi du front
     content: str = Field(..., example="Explique-moi pourquoi l'âge moyen de mes employés pose problème.")
     rapport_id: Optional[str] = Field(None, example="rapport-uuid-123")
-
+    chart_data: Optional[List[Any]] = Field(None, example=[])
 
 # --- SCHÉMA DE RETOUR COMPLET (Requête + Réponse IA + Décisions) ---
 class RequeteResponse(BaseModel):

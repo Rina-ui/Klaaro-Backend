@@ -1,3 +1,4 @@
+import traceback
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
@@ -21,7 +22,6 @@ router = APIRouter(
     tags=["Decision"],
 )
 
-# 1. POSER UNE QUESTION À L'IA (Génère une explication + des décisions)
 @router.post("/demander", response_model=RequeteResponse, status_code=status.HTTP_201_CREATED)
 def demander_assistant(
         request: RequeteCreate,
@@ -29,20 +29,22 @@ def demander_assistant(
         current_user = Depends(get_current_user)
 ):
     try:
-        # On utilise un repository pour gérer l'écriture des requêtes, réponses et décisions
         chat_repo = ChatRepositoryImpl(db)
         use_case = AskAssistantKlaaro(chat_repo)
 
-        # Le Use Case appelle TinyLlama et enregistre tout en BDD d'un coup
         return use_case.execute(
-            user_id=current_user.id, # Récupéré de ton token JWT
+            user_id=current_user.id,
             rapport_id=request.rapport_id,
             type_requete=request.type,
-            content=request.content
+            content=request.content,
+            chart_data=request.chart_data
         )
     except Exception as e:
+        # ICI : On affiche toute la trace de l'erreur dans la console uvicorn !
+        print("=== CRASH ASSISTANT DETAILS ===")
+        traceback.print_exc()
+        print("===============================")
         raise HTTPException(status_code=500, detail=f"Erreur Assistant: {str(e)}")
-
 
 # 2. ACCEPTER/VALIDER UNE DÉCISION MANUELLEMENT
 @router.post("/", response_model=DecisionResponse, status_code=status.HTTP_201_CREATED)
