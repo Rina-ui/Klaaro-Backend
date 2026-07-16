@@ -40,48 +40,55 @@ class KlaaroAIService:
 
     def generate_decision_and_explanation(self, query_content: str, report_content: str) -> dict:
         """
-        Inférence calquée sur le format d'entraînement LoRA (instruction -> response).
+        Inférence cadrée pour éviter les hallucinations de TinyLlama.
         """
-        # 1. On crée une instruction qui ressemble à 100% à celles de ton dataset
-        # Exemple d'instruction dans ton dataset : "Analyse : chiffre_affaires=2500000 FCFA, ..."
-        instruction = f"Analyse : {query_content}. Contexte et données : {report_content}"
-    
-        # 2. Structure brute sans Chat Template (pour éviter que TinyLlama Chat ne reprenne le dessus avec ses tirets)
+        # Cadrage strict du rôle et des consignes pour limiter les dérives de génération
+        system_instruction = (
+            "Tu es Klaaro, un assistant financier clair et pédagogue. "
+            "Analyse le graphique de prévision de façon simple pour un utilisateur novice. "
+            "Règles strictes : "
+            "1. Décris uniquement la tendance visuelle (ex: forte hausse initiale suivie d'une stabilisation stable). "
+            "2. N'invente jamais d'années, de pourcentages ou de termes économiques complexes. "
+            "3. Reste cohérent (ne dis pas qu'il y a une baisse et une hausse en même temps). "
+            "4. Utilise un français parfait et naturel. Pas de jargon."
+        )
+
+        instruction = f"{system_instruction}\nDonnées à analyser : {query_content}. Contexte additionnel : {report_content}"
+
+        # Structure brute pour le modèle fine-tuné
         prompt = f"instruction: {instruction}\nresponse: "
-    
-        # On encode l'invite
+
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-    
+
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=256,
-                temperature=0.3, # Bas pour rester fidèle au dataset
+                max_new_tokens=180, # Réduit pour éviter qu'il ne se mette à boucler ou radoter
+                temperature=0.2,    # Plus bas (0.2 au lieu de 0.3) pour le rendre plus factuel et direct
                 do_sample=True,
-                repetition_penalty=1.15
+                repetition_penalty=1.2 # Légèrement augmenté pour chasser les répétitions et le bégaiement
             )
-    
-        # On extrait la génération de l'IA
+
         decoded_output = self.tokenizer.decode(outputs[0][len(inputs["input_ids"][0]):], skip_special_tokens=True)
-    
-        # On nettoie les résidus de formatage s'il y en a
+
+        # Nettoyage
         clean_response = decoded_output.split("instruction:")[0].split("response:")[0].strip()
-    
+
         print("--- SORTIE DE TON MODÈLE FINE-TUNÉ ---")
         print(clean_response)
         print("---------------------------------------")
-    
-        # Extraction d'une action pour l'interface utilisateur
-        action_suggeree = "Appliquer les recommandations"
-        description_action = "Suivre les conseils générés par l'analyse ci-dessus."
-    
+
+        # Extraction de l'action pour l'UI
+        action_suggeree = "Surveiller la tendance"
+        description_action = "Conserver le suivi actuel de la courbe pour détecter tout changement."
+
         phrases = [p.strip() for p in clean_response.replace("!", ".").split(".") if p.strip()]
         if phrases:
             derniere_phrase = phrases[-1]
             if len(derniere_phrase) < 120 and any(v in derniere_phrase.lower() for v in ["vérifiez", "analysez", "anticipez", "passez", "identifiez", "adaptez", "assurez-vous", "optimisez", "négociez", "bloquez"]):
                 action_suggeree = "Action recommandée"
                 description_action = derniere_phrase
-    
+
         return {
             "explication": clean_response,
             "decisions": [

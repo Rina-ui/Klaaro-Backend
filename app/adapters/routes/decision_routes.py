@@ -78,3 +78,21 @@ def get_decisions_by_user(
         return use_case.execute(user_id)
     except Exception as e:
         raise HTTPException(status_code=44, detail=str(e))
+
+# 4. ACCEPTER/VALIDER UNE DÉCISION SPÉCIFIQUE
+@router.patch("/{decision_id}/accepter", response_model=DecisionResponse)
+def accept_decision(
+        decision_id: str,
+        db: Session = Depends(get_db),
+        current_user = Depends(get_current_user)
+):
+    try:
+        repo = DecisionRepositoryImpl(db)
+        # Remplace par ton Use Case de validation de décision
+        from app.use_cases.services.decision.accept_decision import AcceptDecision
+        use_case = AcceptDecision(repo)
+        return use_case.execute(decision_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la validation : {str(e)}")
