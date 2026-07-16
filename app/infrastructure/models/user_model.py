@@ -30,3 +30,6 @@ class UserModel(Base):
     vulnerabilites = relationship("VulnerabiliteModel", back_populates="user", cascade="all, delete-orphan")
     decisions = relationship("DecisionModel", back_populates="user", cascade="all, delete-orphan")
     database_connections = relationship("DatabaseConnectionModel", back_populates="user", cascade="all, delete-orphan")
+
+    alerte_frequence = Column(String, nullable=False, default="chaque_jour") # "chaque_jour" ou "toutes_les_semaines"
+    alerte_colonne_cible = Column(String, nullable=False, default="ventes")

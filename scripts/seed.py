@@ -1,6 +1,6 @@
+# seed.py
 import sys
 import os
-
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -85,6 +85,7 @@ def seed():
         print("Entreprises créées")
 
         # ===== USERS =====
+        # Les champs 'alerte_frequence' et 'alerte_colonne_cible' ont été ajoutés explicitement
         user1 = UserModel(
             id=str(uuid.uuid4()),
             firstname="Koffi",
@@ -92,9 +93,11 @@ def seed():
             email="koffi@example.com",
             password=pwd_context.hash("password123"),
             profession="Gérant",
-            role=Role.USER.value,  # <--- AJOUTE .value ICI (ou met "user")
+            role=Role.USER.value,
             account_type=AccountType.ENTREPRISE,
-            entreprise_id=entreprise1.id
+            entreprise_id=entreprise1.id,
+            alerte_frequence="chaque_jour",
+            alerte_colonne_cible="ventes"
         )
         user2 = UserModel(
             id=str(uuid.uuid4()),
@@ -103,9 +106,11 @@ def seed():
             email="ama@example.com",
             password=pwd_context.hash("password123"),
             profession="Data Scientist",
-            role=Role.USER.value,  # <--- AJOUTE .value ICI (ou met "user")
+            role=Role.USER.value,
             account_type=AccountType.INDIVIDUAL,
-            entreprise_id=None
+            entreprise_id=None,
+            alerte_frequence="toutes_les_semaines",
+            alerte_colonne_cible="montant"
         )
         user_admin = UserModel(
             id=str(uuid.uuid4()),
@@ -114,9 +119,11 @@ def seed():
             email="admin@klaaro.com",
             password=pwd_context.hash("admin123"),
             profession="Administrateur",
-            role=Role.ADMIN.value,  # <--- AJOUTE .value ICI (ou met "admin")
+            role=Role.ADMIN.value,
             account_type=AccountType.INDIVIDUAL,
-            entreprise_id=None
+            entreprise_id=None,
+            alerte_frequence="chaque_jour",
+            alerte_colonne_cible="ventes"
         )
         db.add_all([user1, user2, user_admin])
         db.commit()
@@ -196,7 +203,7 @@ def seed():
                 type=TypeAlerte.ANOMALIE_FINANCIERE,
                 content="Transaction suspecte de 3 500 000 FCFA détectée à 2h du matin",
                 send_date=now - timedelta(hours=5),
-                niveau_gravite=NiveauVul.Critique,
+                niveau_gravite=NiveauVul.CRITIQUE,
                 user_id=user1.id
             ),
             AlerteModel(
@@ -204,7 +211,7 @@ def seed():
                 type=TypeAlerte.PIC_DONNEES,
                 content="Vos ventes ont augmenté de 12% cette semaine — continuez sur cette lancée !",
                 send_date=now - timedelta(days=1),
-                niveau_gravite=NiveauVul.Moyenne,
+                niveau_gravite=NiveauVul.MOYENNE,
                 user_id=user1.id
             ),
             AlerteModel(
@@ -212,7 +219,7 @@ def seed():
                 type=TypeAlerte.ANOMALIE_VENTES,
                 content="Stock de riz parfumé en rupture dans 3 jours au rythme actuel",
                 send_date=now - timedelta(hours=12),
-                niveau_gravite=NiveauVul.Moyenne,
+                niveau_gravite=NiveauVul.MOYENNE,
                 user_id=user1.id
             ),
         ]
@@ -263,19 +270,20 @@ def seed():
         print("Réponses créées")
 
         # ===== RAPPORTS =====
+        # Les rapports ci-dessous fournissent des données JSON brutes pour le parsing dans recuperer_dataframe_utilisateur
         rapports = [
             RapportModel(
                 id=str(uuid.uuid4()),
-                type=TypeRapport.PREPROCESSING,  # <--- Utilise l'Enum ici
-                content="Rapport mars 2024 : CA=450000 FCFA, Marge=18%, Meilleur produit=Riz parfumé, Anomalies=2",
+                type=TypeRapport.PREPROCESSING,
+                content='[{"date": "2024-03-01", "ventes": 120, "montant": 50000}, {"date": "2024-03-02", "ventes": 150, "montant": 62000}]',
                 periode="Mars 2024",
                 date_generation=now - timedelta(days=3),
                 user_id=user1.id
             ),
             RapportModel(
                 id=str(uuid.uuid4()),
-                type=TypeRapport.PREPROCESSING,  # <--- Et ici
-                content="Semaine du 8 au 14 avril : CA=112000 FCFA, +5% vs semaine précédente",
+                type=TypeRapport.PREPROCESSING,
+                content='[{"date": "2024-04-08", "ventes": 110, "montant": 48000}, {"date": "2024-04-09", "ventes": 135, "montant": 55000}]',
                 periode="Semaine 15 - 2024",
                 date_generation=now - timedelta(days=1),
                 user_id=user1.id
@@ -290,7 +298,7 @@ def seed():
             VulnerabiliteModel(
                 id=str(uuid.uuid4()),
                 type=TypeVulnerabilite.DONNEES_EXPOSEES,
-                niveau=NiveauVul.Critique,
+                niveau=NiveauVul.CRITIQUE,
                 description="Données clients stockées en clair dans un fichier Excel accessible à tous les employés",
                 date_detected=now - timedelta(days=2),
                 status=Status.DETECTED if hasattr(Status, "DETECTED") else Status.SUGGEREE,
@@ -299,7 +307,7 @@ def seed():
             VulnerabiliteModel(
                 id=str(uuid.uuid4()),
                 type=TypeVulnerabilite.ACCES_NON_AUTORISE,
-                niveau=NiveauVul.Moyenne,
+                niveau=NiveauVul.MOYENNE,
                 description="3 tentatives de connexion échouées détectées sur le compte admin en 5 minutes",
                 date_detected=now - timedelta(hours=6),
                 status=Status.SUGGEREE,
@@ -319,7 +327,7 @@ def seed():
                 date=now - timedelta(days=1),
                 status=Status.SUGGEREE,
                 user_id=user1.id,
-                reponse_id=reponses[0].id  # <--- Lie la décision à la première réponse
+                reponse_id=reponses[0].id
             ),
             DecisionModel(
                 id=str(uuid.uuid4()),
@@ -328,7 +336,7 @@ def seed():
                 date=now - timedelta(hours=3),
                 status=Status.SUGGEREE,
                 user_id=user1.id,
-                reponse_id=reponses[1].id  # <--- Lie la décision à la deuxième réponse
+                reponse_id=reponses[1].id
             ),
         ]
         db.add_all(decisions)
@@ -336,8 +344,8 @@ def seed():
         print("Décisions créées")
 
         print("\nSeeding terminé avec succès !")
-        print(f"Users créés : koffi@example.com / password123")
-        print(f"             ama@example.com / password123")
+        print(f"Users créés : koffi@example.com / password123 (cible: {user1.alerte_colonne_cible}, freq: {user1.alerte_frequence})")
+        print(f"             ama@example.com / password123 (cible: {user2.alerte_colonne_cible}, freq: {user2.alerte_frequence})")
         print(f"             admin@klaaro.com / admin123")
 
 if __name__ == "__main__":

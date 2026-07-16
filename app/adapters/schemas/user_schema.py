@@ -32,3 +32,7 @@ class LoginResponse(BaseModel):
     user: UserResponse
 
     model_config = ConfigDict(from_attributes=True)
+
+class UpdateAlertePreferencesRequest(BaseModel):
+    alerte_frequence: str
+    alerte_colonne_cible: str 

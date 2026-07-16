@@ -2,5 +2,6 @@ from enum import Enum
 
 
 class NiveauVul(Enum):
-    Critique = "critique"
-    Moyenne = "moyenne"
+    CRITIQUE = "critique"
+    MOYENNE = "moyenne"
+    FAIBLE = "faible"

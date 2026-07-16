@@ -12,3 +12,4 @@ class Alerte:
     content: str
     send_date: datetime
     niveau_gravite: NiveauVul
+    user_id: str

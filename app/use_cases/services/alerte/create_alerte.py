@@ -1,13 +1,15 @@
 import uuid
 from datetime import datetime
 from app.entities.alerte import Alerte
+from app.entities.enum.NiveauVul import NiveauVul
+from app.entities.enum.typeAlerte import TypeAlerte
 from app.use_cases.repositories.alerte_repository import AlerteRepository
 
 class CreateAlerte:
     def __init__(self, alerte_repository: AlerteRepository):
         self.alerte_repository = alerte_repository
 
-    def execute(self, type: str, content: str, niveau_gravite: str, user_id: str) -> Alerte:
+    def execute(self, type: TypeAlerte, content: str, niveau_gravite: NiveauVul, user_id: str) -> Alerte:
         alerte = Alerte(
             id=str(uuid.uuid4()),
             type=type,
