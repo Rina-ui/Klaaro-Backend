@@ -65,10 +65,7 @@ def _read_file_to_df(file: UploadFile) -> pd.DataFrame:
 async def preprocess_data(file: UploadFile = File(...),
                           current_user = Depends(get_current_user)):
     try:
-        # Transformation magique en DataFrame peu importe le format d'origine !
         df = _read_file_to_df(file)
-
-        # Le service prend le relais pour valider, nettoyer et choisir le graphique
         result = ml_service.preprocess_data(df)
 
         if result.get("status") == "rejected":
@@ -77,12 +74,10 @@ async def preprocess_data(file: UploadFile = File(...),
                 detail=result["message"]
             )
 
-        # On retourne exactement les clés calculées par le service blindé
         return {
             "status": "success",
             "format_origine": result.get("format_origine", file.filename.split('.')[-1]),
-            "chart_type": result.get("chart_type", "bar"),
-            "chart_data": result["chart_data"],
+            "charts": result["charts"], # Contient la liste des graphiques avec titres, motifs et explications faciles
             "rapport": result["rapport"],
             "apercu_donnees": result["apercu_donnees"]
         }
