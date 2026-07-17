@@ -11,3 +11,4 @@ class Decision:
     description: str
     status: Status
     date: datetime
+    user_id: str
