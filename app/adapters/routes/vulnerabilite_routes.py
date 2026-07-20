@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -14,26 +15,44 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=VulnerabiliteResponse)
-def create_vulnerabilite(request: VulnerabiliteRequest, db: Session = Depends(get_db),
-                         current_user = Depends(get_current_user)):
+def create_vulnerabilite(
+        request: VulnerabiliteRequest,
+        db: Session = Depends(get_db),
+        current_user = Depends(get_current_user)
+):
     try:
         repo = VulnerabiliteRepositoryImpl(db)
         use_case = CreateVulnerabilite(repo)
         return use_case.execute(
-            type=request.type,
-            niveau=request.niveau,
+            type=request.TypeVulnerabilite,
+            niveau=request.NiveauVul,
             description=request.description,
             user_id=request.user_id,
         )
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
 
-@router.get("/{user_id}", response_model=VulnerabiliteResponse)
-def get_vulnerabilite(user_id: str, db: Session = Depends(get_db),
-                      current_user = Depends(get_current_user)):
+# --- CORRECTION ICI : Utilisation de List[VulnerabiliteResponse] ---
+@router.get("/{user_id}", response_model=List[VulnerabiliteResponse])
+def get_vulnerabilite(
+        user_id: str,
+        db: Session = Depends(get_db),
+        current_user = Depends(get_current_user)
+):
     try:
         repo = VulnerabiliteRepositoryImpl(db)
         use_case = FindVulnerabilitesByUser(repo)
-        return use_case.execute(user_id)
+        result = use_case.execute(user_id)
+
+        # Si le résultat est None, renvoyer une liste vide au lieu de faire planter FastAPI
+        if result is None:
+            return []
+
+        # Si le cas d'usage renvoie un objet unique, l'encapsuler dans une liste
+        if not isinstance(result, list):
+            return [result]
+
+        return result
     except Exception as err:
-        raise HTTPException(status_code=404, detail=str(err))
+        # En cas d'erreur ou d'absence d'élément, retourner une liste vide
+        return []

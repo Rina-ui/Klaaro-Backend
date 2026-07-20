@@ -1,3 +1,5 @@
+from typing import List, Any
+
 from sqlalchemy.orm import Session
 
 from app.entities.user import User
@@ -106,3 +108,14 @@ class UserRepositoryImpl(UserRepository):
 
     def get_user_by_id(self, user_id: str) -> User:
         return self.find_by_id(user_id)
+
+    def get_by_entreprise(self, entreprise_id: str | int) -> list[Any] | list[type[UserModel]]:
+        """
+        Récupère la liste de tous les utilisateurs appartenant à la même entreprise.
+        """
+        if not entreprise_id:
+            return []
+
+        return self.db.query(UserModel).filter(
+            UserModel.entreprise_id == entreprise_id
+        ).all()

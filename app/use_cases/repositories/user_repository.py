@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from app.entities.user import User
 
@@ -31,4 +32,8 @@ class UserRepository(ABC):
 
     @abstractmethod
     def delete_user(self, user_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_by_entreprise(self, entreprise_id: str | int) -> List:
         pass

@@ -2,7 +2,7 @@ import io
 import os
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 import pandas as pd
 from jose import jwt
 
@@ -223,3 +223,17 @@ def delete_user(user_id: str, db: Session = Depends(get_db),
         return {"message": "User deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@router.get("/members", response_model=List[UserResponse])
+def get_company_members(
+        db: Session = Depends(get_db),
+        current_user: UserModel = Depends(get_current_user)
+):
+    try:
+        if not current_user.entreprise_id:
+            return []
+
+        repo = UserRepositoryImpl(db)
+        return repo.get_by_entreprise(current_user.entreprise_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
