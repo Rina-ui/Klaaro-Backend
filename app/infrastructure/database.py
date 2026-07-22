@@ -1,39 +1,48 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
 # URL de connexion PostgreSQL
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Crée le moteur
-engine = create_engine(DATABASE_URL)
+if not DATABASE_URL:
+    raise ValueError("La variable d'environnement DATABASE_URL est introuvable.")
+
+# =========================================================================
+# CRÉATION DU MOTEUR AVEC SÉCURITÉ SSL ET RECONNEXION AUTOMATIQUE (POOL)
+# =========================================================================
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,  # Teste la connexion avant chaque requête (évite SSL closed unexpectedly)
+    pool_recycle=300,    # Reconnecte proprement les connexions inactives (5 minutes)
+    pool_size=10,        # Nombre de connexions maintenues ouvertes
+    max_overflow=20      # Connections temporaires supplémentaires sous charge
+)
 
 # Crée la session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base pour les modèles (déclarée en premier)
+# Base pour les modèles SQLAlchemy
 class Base(DeclarativeBase):
     pass
 
 # =========================================================================
-# FORCE L'IMPORTATION DES MODÈLES APRÈS LA DÉCLARATION DE 'Base'
-# Cela permet d'enregistrer tous les mappers SQLAlchemy au démarrage de l'app
+# IMPORTATION DE TOUS LES MODÈLES
+# Enregistre tous les mappers SQLAlchemy au démarrage de l'application
 # =========================================================================
 try:
     from app.infrastructure.models.user_model import UserModel
     from app.infrastructure.models.database_model import DatabaseConnectionModel
-    # Ajoute les autres modèles ici au fur et à mesure :
-    # from app.infrastructure.models.document_model import DocumentModel
-    # from app.infrastructure.models.alerte_model import AlerteModel
-    # etc...
+    from app.infrastructure.models.document_model import DocumentModel
+    from app.infrastructure.models.rapport_model import RapportModel
+    from app.infrastructure.models.alerte_model import AlerteModel
 except ImportError as e:
-    # Optionnel : log l'erreur ou laisse-la remonter pour débugger tes chemins d'imports
-    print(f"Erreur lors du chargement des modèles SQLAlchemy : {e}")
+    print(f"⚠️ Avertissement lors du chargement des modèles SQLAlchemy : {e}")
 
-# Fonction pour obtenir la session
+# Dépendance FastAPI pour injecter la session de BDD
 def get_db():
     db = SessionLocal()
     try:

@@ -56,7 +56,6 @@ class KlaaroMLService:
         numeric_cols = df.select_dtypes(include=['number']).columns
         if len(numeric_cols) == 0:
             try:
-                # Essai de conversion pour vérifier si la colonne unique contient des valeurs chiffrées
                 cleaned = df.iloc[:, 0].astype(str).str.replace(',', '').str.replace(' ', '')
                 pd.to_numeric(cleaned)
             except Exception:
@@ -80,7 +79,7 @@ class KlaaroMLService:
 
         df_clean = df.copy()
 
-        # Standardisation des noms de colonnes (sans accents, minuscules, underscores)
+        # Standardisation des noms de colonnes
         df_clean.columns = (
             df_clean.columns
             .str.strip()
@@ -105,47 +104,41 @@ class KlaaroMLService:
                     cleaned_col = (
                         df_clean[col]
                         .astype(str)
-                        .str.replace(',', '')
+                        .str.replace(',', '.')
                         .str.replace(' ', '')
                         .str.strip()
                     )
                     converted = pd.to_numeric(cleaned_col, errors='coerce')
 
-                    # Seuil de tolérance : au moins 70% de valeurs convertibles pour valider le type numérique
                     if converted.notnull().sum() / len(df_clean) > 0.7:
                         df_clean[col] = converted
                         rapport["actions"].append(f"Colonne '{col}' convertie en numérique")
                 except Exception:
                     pass
 
-        # Traitement et filtrage des dates
+        # Traitement sécurisé des dates (sans suppression brutale de lignes)
         for col in df_clean.columns:
             if any(k in col.lower() for k in ['date', 'mois', 'annee', 'created', 'updated']):
                 try:
-                    converted_dates = pd.to_datetime(df_clean[col], errors='coerce')
+                    converted_dates = pd.to_datetime(df_clean[col], errors='coerce', dayfirst=True)
                     if converted_dates.notnull().sum() > 0:
                         df_clean[col] = converted_dates
-                        # Exclusion des années aberrantes
-                        df_clean = df_clean[
-                            (df_clean[col].isnull()) |
-                            ((df_clean[col].dt.year >= 1980) & (df_clean[col].dt.year <= 2100))
-                            ]
-                        rapport["actions"].append(f"Colonne '{col}' convertie en date avec filtrage des valeurs aberrantes")
+                        rapport["actions"].append(f"Colonne '{col}' convertie en date")
                 except Exception:
                     pass
 
-        # Imputation des valeurs manquantes
+        # Imputation des valeurs manquantes (compatible Pandas 2.0+)
         nb_nulls_avant = df_clean.isnull().sum().sum()
         if nb_nulls_avant > 0:
             for col in df_clean.columns:
                 if df_clean[col].isnull().sum() > 0:
-                    if df_clean[col].dtype in ['float64', 'int64']:
+                    if pd.api.types.is_numeric_dtype(df_clean[col]):
                         df_clean[col] = df_clean[col].fillna(df_clean[col].median())
-                    elif isinstance(df_clean[col].dtype, pd.DatetimeTZDtype) or df_clean[col].dtype == 'datetime64[ns]':
+                    elif pd.api.types.is_datetime64_any_dtype(df_clean[col]):
                         df_clean[col] = df_clean[col].bfill().ffill()
                     else:
                         mode_values = df_clean[col].mode()
-                        fill_val = mode_values.iloc[0] if not mode_values.empty else "Inconnu"
+                        fill_val = mode_values.iloc[0] if not mode_values.empty else "Non spécifié"
                         df_clean[col] = df_clean[col].fillna(fill_val)
             rapport["actions"].append(f"{nb_nulls_avant} valeurs manquantes imputées")
 
@@ -155,11 +148,22 @@ class KlaaroMLService:
         cat_cols = df_clean.select_dtypes(include=['object', 'string']).columns.tolist()
         date_cols = df_clean.select_dtypes(include=['datetime64[ns]']).columns.tolist()
 
-        # Graphique 1 : Évolution Temporelle
+        # Recherche automatique d'une colonne de texte explicative (ex: description, titre, statut, etc.)
+        colonne_explicative = None
+        for c in cat_cols:
+            if any(k in c.lower() for k in ['desc', 'sujet', 'titre', 'nom', 'statut', 'type', 'libelle', 'raison']):
+                colonne_explicative = c
+                break
+
+        # -------------------------------------------------------------------
+        # Graphique 1 : Évolution Temporelle (Chrono & Records)
+        # -------------------------------------------------------------------
         if len(date_cols) > 0 and len(num_cols) > 0:
             date_target = date_cols[0]
             num_target = num_cols[0]
-            df_grouped = df_clean.groupby(df_clean[date_target].dt.strftime('%Y-%m-%d'))[num_target].sum().reset_index().tail(15)
+
+            df_temp = df_clean.dropna(subset=[date_target]).copy()
+            df_grouped = df_temp.groupby(df_temp[date_target].dt.strftime('%Y-%m-%d'))[num_target].sum().reset_index().tail(20)
 
             chart_data = [
                 {"name": str(row[date_target]), "valeur": float(row[num_target])}
@@ -171,22 +175,37 @@ class KlaaroMLService:
                 date_max = df_grouped.loc[df_grouped[num_target].idxmax(), date_target]
                 moyenne = df_grouped[num_target].mean()
                 val_min = df_grouped[num_target].min()
-                volatilite = float(df_grouped[num_target].std() / moyenne * 100) if moyenne > 0 else 0
+
+                nom_chiffre = num_target.replace('_', ' ')
+                nom_date = date_target.replace('_', ' ')
+
+                # Recherche du contexte du jour record
+                detail_jour_record = ""
+                if colonne_explicative:
+                    lignes_record = df_temp[df_temp[date_target].dt.strftime('%Y-%m-%d') == date_max]
+                    if not lignes_record.empty:
+                        evenement = lignes_record[colonne_explicative].iloc[0]
+                        detail_jour_record = f" (marqué notamment par : '{evenement}')"
 
                 charts.append({
                     "type": "line",
-                    "title": f"Évolution de {num_target} au fil du temps",
-                    "colonne_choisie": f"La colonne temporelle '{date_target}' a été sélectionnée pour structurer l'historique et croiser l'indicateur '{num_target}'.",
+                    "title": f"Évolution dans le temps de la donnée '{nom_chiffre}'",
+                    "colonne_choisie": (
+                        f"Nous avons sélectionné la date ('{nom_date}') et le chiffre '{nom_chiffre}' "
+                        f"afin d'observer l'activité au jour le jour sur vos {len(df_clean)} lignes."
+                    ),
                     "explanation": (
-                        f"L'analyse montre une valeur moyenne de {moyenne:,.2f}. "
-                        f"Un pic est atteint le {date_max} avec {val_max:,.2f} unités, "
-                        f"tandis que la valeur minimale descend à {val_min:,.2f}. "
-                        f"La volatilité observée est de {volatilite:.1f}%."
+                        f"En moyenne, vous enregistrez {moyenne:,.0f} par journée active. "
+                        f"Votre pic d'activité marquant a eu lieu le {date_max} avec un record de {val_max:,.0f}{detail_jour_record}. "
+                        f"À l'inverse, votre niveau le plus bas s'établit à {val_min:,.0f}. "
+                        f"Observer ces variations vous permet d'anticiper les jours de forte charge."
                     ),
                     "data": chart_data
                 })
 
-        # Graphique 2 : Segmentation Catégorielle
+        # -------------------------------------------------------------------
+        # Graphique 2 : Distribution Catégorielle (Traduite & Détaillée)
+        # -------------------------------------------------------------------
         if len(cat_cols) > 0:
             target_col = cat_cols[0]
             counts_all = df_clean[target_col].value_counts()
@@ -199,57 +218,85 @@ class KlaaroMLService:
             top_1_val = counts.iloc[0] if len(counts) > 0 else 0
             top_1_pct = (top_1_val / total_rows * 100) if total_rows > 0 else 0
 
-            explication_col = f"La colonne '{target_col}' présente {unique_count} catégories distinctes sur {total_rows} entrées."
+            nom_cat = target_col.replace('_', ' ')
+
+            # Récupération de l'explication si la cible est un identifiant/code
+            detail_concret = ""
+            if colonne_explicative and colonne_explicative != target_col:
+                correspondances = df_clean[df_clean[target_col] == top_1_name][colonne_explicative].dropna()
+                if not correspondances.empty:
+                    detail_concret = f" (qui correspond concrètement à : '{correspondances.iloc[0]}')"
+
+            explication_criblage = (
+                f"Nous avons sélectionné la colonne '{nom_cat}' car elle découpe vos {total_rows} lignes "
+                f"en {unique_count} catégories distinctes. C'est l'indicateur idéal pour repérer vos plus gros volumes."
+            )
 
             if len(counts) <= 4:
                 charts.append({
                     "type": "pie",
-                    "title": f"Répartition de la colonne '{target_col}'",
-                    "colonne_choisie": explication_col,
+                    "title": f"Répartition et part de la colonne '{nom_cat}'",
+                    "colonne_choisie": explication_criblage,
                     "explanation": (
-                        f"La catégorie principale '{top_1_name}' représente {top_1_pct:.1f}% de la distribution totale ({top_1_val} occurrences)."
+                        f"C'est '{top_1_name}'{detail_concret} qui ressort en premier : il apparaît {top_1_val} fois, "
+                        f"ce qui représente {top_1_pct:.0f}% de toutes vos données. "
+                        f"En clair, une grande partie de votre activité tourne autour de cet élément."
                     ),
                     "data": chart_data
                 })
             else:
-                top_3_pct = (counts.head(3).sum() / total_rows * 100) if total_rows > 0 else 0
+                top_3_val = counts.head(3).sum()
+                top_3_pct = (top_3_val / total_rows * 100) if total_rows > 0 else 0
+
                 charts.append({
                     "type": "bar",
-                    "title": f"Distribution de la colonne '{target_col}'",
-                    "colonne_choisie": explication_col,
+                    "title": f"Classement et dominance de la colonne '{nom_cat}'",
+                    "colonne_choisie": explication_criblage,
                     "explanation": (
-                        f"Dominance du segment '{top_1_name}' ({top_1_pct:.1f}% du volume). "
-                        f"Le Top 3 des catégories rassemble {top_3_pct:.1f}% des occurrences totales."
+                        f"L'élément n°1 de votre fichier est '{top_1_name}'{detail_concret}, "
+                        f"enregistré {top_1_val} fois ({top_1_pct:.0f}% du total). "
+                        f"Si on cumule vos 3 principales catégories, elles regroupent {top_3_val} lignes, soit {top_3_pct:.0f}% de tout le fichier. "
+                        f"Cela signifie que l'essentiel de votre volume est concentré sur ce petit groupe d'éléments."
                     ),
                     "data": chart_data
                 })
 
-        # Graphique 3 : Corrélation
+        # -------------------------------------------------------------------
+        # Graphique 3 : Corrélation (Lien concret entre 2 données)
+        # -------------------------------------------------------------------
         if len(num_cols) >= 2:
             x_target = num_cols[0]
             y_target = num_cols[1]
-            df_sampled = df_clean.head(30)
+            df_sampled = df_clean.sample(min(100, len(df_clean)), random_state=42)
             chart_data = [
                 {"name": float(row[x_target]), "valeur": float(row[y_target])}
                 for _, row in df_sampled.iterrows()
             ]
 
+            nom_x = x_target.replace('_', ' ')
+            nom_y = y_target.replace('_', ' ')
+
             charts.append({
                 "type": "scatter",
-                "title": f"Corrélation entre {x_target} et {y_target}",
-                "colonne_choisie": f"Analyse croisée des variables numériques '{x_target}' et '{y_target}'.",
+                "title": f"Lien direct entre '{nom_x}' et '{nom_y}'",
+                "colonne_choisie": (
+                    f"Nous avons croisé la donnée '{nom_x}' avec la donnée '{nom_y}' "
+                    f"sur un échantillon de {len(df_sampled)} lignes pour vérifier si elles évoluent ensemble."
+                ),
                 "explanation": (
-                    f"Évaluation de l'interaction entre '{x_target}' et '{y_target}'. "
-                    f"Une disposition alignée indique une relation directe, tandis qu'une dispersion traduit une indépendance des variables."
+                    f"Ce graphique permet de comprendre la relation de cause à effet : "
+                    f"il montre si une augmentation de la donnée '{nom_x}' fait automatiquement grimper ou chuter la donnée '{nom_y}'. "
+                    f"Si les points forment une ligne qui monte, ces deux éléments sont directement liés dans votre activité."
                 ),
                 "data": chart_data
             })
 
-        # Préparation de l'aperçu JSON
-        df_preview = df_clean.head(5).copy()
+        # Aperçu JSON sécurisé
+        df_preview = df_clean.head(10).copy()
         for col in df_preview.columns:
-            if df_preview[col].dtype == 'datetime64[ns]':
-                df_preview[col] = df_preview[col].dt.strftime('%Y-%m-%d')
+            if pd.api.types.is_datetime64_any_dtype(df_preview[col]):
+                df_preview[col] = df_preview[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+
         df_preview = df_preview.replace({np.nan: None})
 
         rapport["colonnes_apres"] = list(df_clean.columns)
@@ -419,24 +466,28 @@ class KlaaroMLService:
         Retourne : (buffer_bytes, media_type, file_extension)
         """
         buffer = io.BytesIO()
-        file_format = file_format.lower().strip()
+        file_format = str(file_format).lower().strip()
+
+        # Copie locale pour formater proprement les types Datetime sans altérer le DataFrame source
+        df_export = df.copy()
+        for col in df_export.columns:
+            if pd.api.types.is_datetime64_any_dtype(df_export[col]):
+                df_export[col] = df_export[col].dt.strftime('%Y-%m-%d %H:%M:%S').fillna('')
 
         if file_format in ["xlsx", "excel"]:
             with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-                df.to_excel(writer, index=False, sheet_name="Data_Cleaned")
+                df_export.to_excel(writer, index=False, sheet_name="Data_Cleaned")
             media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ext = "xlsx"
 
         elif file_format == "json":
-            # Pour JSON, export propre avec dates au format ISO string
-            json_str = df.to_json(orient="records", date_format="iso")
+            json_str = df_export.to_json(orient="records", date_format="iso")
             buffer.write(json_str.encode("utf-8"))
             media_type = "application/json"
             ext = "json"
 
         else:  # Format CSV par défaut
-            # Export CSV encodé en UTF-8 avec BOM pour une ouverture directe sans bug d'accents dans Excel
-            csv_str = df.to_csv(index=False, encoding="utf-8-sig")
+            csv_str = df_export.to_csv(index=False, encoding="utf-8-sig")
             buffer.write(csv_str.encode("utf-8-sig"))
             media_type = "text/csv"
             ext = "csv"
