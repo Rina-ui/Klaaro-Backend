@@ -6,6 +6,7 @@ from typing import Optional, List
 import pandas as pd
 from jose import jwt
 
+
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
 from pydantic import json
@@ -136,6 +137,41 @@ def get_me(current_user = Depends(get_current_user)):
     """
     return current_user
 
+@router.get("/members", response_model=List[UserResponse])
+def get_collaborators(
+        db: Session = Depends(get_db),
+        current_user: UserModel = Depends(get_current_user)
+):
+    """
+    Récupère la liste des collaborateurs du même account_type.
+    """
+    try:
+        # Récupère tous les utilisateurs rattachés au même type de compte
+        users = db.query(UserModel).filter(
+            UserModel.account_type == current_user.account_type
+        ).all()
+
+        # Sécurise la conversion de l'ID en string pour chaque utilisateur
+        result = []
+        for u in users:
+            user_data = UserResponse(
+                id=str(u.id),  # Force la conversion en str
+                firstname=u.firstname,
+                lastname=u.lastname,
+                email=u.email,
+                profession=u.profession or "",
+                role=u.role,
+                account_type=u.account_type
+            )
+            result.append(user_data)
+
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erreur lors de la récupération des membres : {str(e)}"
+        )
+
 
 @router.patch("/preferences-alertes", status_code=status.HTTP_200_OK)
 def update_alerte_preferences(
@@ -224,39 +260,4 @@ def delete_user(user_id: str, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-from typing import List
 
-@router.get("/members", response_model=List[UserResponse])
-def get_collaborators(
-        db: Session = Depends(get_db),
-        current_user: UserModel = Depends(get_current_user)
-):
-    """
-    Récupère la liste des collaborateurs du même account_type.
-    """
-    try:
-        # Récupère tous les utilisateurs rattachés au même type de compte
-        users = db.query(UserModel).filter(
-            UserModel.account_type == current_user.account_type
-        ).all()
-
-        # Sécurise la conversion de l'ID en string pour chaque utilisateur
-        result = []
-        for u in users:
-            user_data = UserResponse(
-                id=str(u.id),  # Force la conversion en str
-                firstname=u.firstname,
-                lastname=u.lastname,
-                email=u.email,
-                profession=u.profession or "",
-                role=u.role,
-                account_type=u.account_type
-            )
-            result.append(user_data)
-
-        return result
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erreur lors de la récupération des membres : {str(e)}"
-        )
