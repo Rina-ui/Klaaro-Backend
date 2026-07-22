@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, status
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Query, status
+from fastapi.responses import StreamingResponse
 import pandas as pd
 import io
-
+import json
+import pdfplumber
 from pypdf import PdfReader
 
 from app.entities.SecurityQuestionnaire import SecurityQuestionnaire
@@ -11,25 +13,53 @@ from app.adapters.dependencies import get_current_user
 router = APIRouter(prefix="/ml", tags=["Machine Learning"])
 
 def _read_file_to_df(file: UploadFile) -> pd.DataFrame:
-    """
-    Transforme dynamiquement du CSV, Excel, XML ou PDF en DataFrame Pandas standard.
-    """
+    """Transforme dynamiquement du CSV, Excel, JSON, XML ou PDF en DataFrame Pandas standard."""
     filename = file.filename.lower()
     contents = file.file.read()
-    file.file.seek(0) # Reset le pointeur
+    file.file.seek(0)  # Reset du pointeur
 
     try:
-        # GESTION EXCEL
-        if filename.endswith(('.xlsx', '.xls')):
+        # 1. GESTION EXCEL (.xlsx, .xls)
+        if filename.endswith((".xlsx", ".xls")):
             return pd.read_excel(io.BytesIO(contents))
 
-        # GESTION XML
-        elif filename.endswith('.xml'):
-            # Convertit le XML en liste de dictionnaires automatiquement
+        # 2. GESTION JSON (.json)
+        elif filename.endswith(".json"):
+            data = json.loads(contents.decode("utf-8"))
+            if isinstance(data, list):
+                return pd.DataFrame(data)
+            elif isinstance(data, dict):
+                # On cherche la première clé qui contient une liste de données
+                for key, val in data.items():
+                    if isinstance(val, list):
+                        return pd.DataFrame(val)
+                return pd.DataFrame([data])
+            else:
+                raise HTTPException(
+                    status_code=400, detail="Structure JSON non valide."
+                )
+
+        # 3. GESTION XML (.xml)
+        elif filename.endswith(".xml"):
             return pd.read_xml(io.BytesIO(contents))
 
-        # GESTION PDF (Extraction textuelle brute pour validation)
-        elif filename.endswith('.pdf'):
+        # 4. GESTION PDF (.pdf) -> Extraction de Tableaux Métiers
+        elif filename.endswith(".pdf"):
+            tables = []
+            # Essai avec pdfplumber pour extraire de vrais tableaux (ventes, stocks...)
+            with pdfplumber.open(io.BytesIO(contents)) as pdf:
+                for page in pdf.pages:
+                    extracted_table = page.extract_table()
+                    if extracted_table:
+                        tables.extend(extracted_table)
+
+            if tables and len(tables) > 1:
+                # La première ligne contient les en-têtes
+                df_pdf = pd.DataFrame(tables[1:], columns=tables[0])
+                # Nettoyage des None éventuels créés par l'extraction
+                return df_pdf.dropna(how="all")
+
+            # Fallback si aucun tableau structuré n'a été détecté (Texte brut)
             reader = PdfReader(io.BytesIO(contents))
             full_text = ""
             for page in reader.pages:
@@ -38,27 +68,32 @@ def _read_file_to_df(file: UploadFile) -> pd.DataFrame:
                     full_text += text + "\n"
 
             if not full_text.strip():
-                raise HTTPException(status_code=400, detail="Le fichier PDF est vide ou contient uniquement des images scannées non lisibles.")
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        "Le fichier PDF est vide ou contient uniquement des images"
+                        " scannées."
+                    ),
+                )
 
-            # Pour le PDF, on crée un DataFrame temporaire à une seule colonne de texte.
-            # C'est la méthode `validate_document_structure` du service qui va détecter
-            # si c'est un CV/Mémoire ou des données d'entreprise structurées.
-            lines = [line.strip() for line in full_text.split('\n') if line.strip()]
+            lines = [
+                line.strip() for line in full_text.split("\n") if len(line.strip()) > 3
+            ]
             return pd.DataFrame(lines, columns=["texte_brut_pdf"])
 
-        # GESTION CSV (Par défaut)
+        # 5. GESTION CSV (.csv et autres)
         else:
             try:
                 return pd.read_csv(io.BytesIO(contents))
             except UnicodeDecodeError:
-                return pd.read_csv(io.BytesIO(contents), encoding='latin-1')
+                return pd.read_csv(io.BytesIO(contents), encoding="latin-1")
 
     except HTTPException as http_ex:
         raise http_ex
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Impossible de parser le fichier {file.filename}: {str(e)}"
+            detail=f"Impossible de parser le fichier {file.filename}: {str(e)}",
         )
 
 @router.post("/preprocess")
@@ -85,6 +120,48 @@ async def preprocess_data(file: UploadFile = File(...),
         raise http_ex
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erreur lors du traitement: {str(e)}")
+
+@router.post("/export")
+async def export_processed_data(
+        file: UploadFile = File(...),
+        export_format: str = Query("csv", enum=["csv", "xlsx", "json"]),
+        current_user = Depends(get_current_user)
+):
+    """
+    Nettoie le fichier soumis et renvoie le fichier transformé au format désiré (csv, xlsx, json).
+    """
+    try:
+        df = _read_file_to_df(file)
+
+        # 1. Traitement et nettoyage des données
+        prep = ml_service.preprocess_data(df)
+        if prep.get("status") == "rejected":
+            raise HTTPException(status_code=400, detail=prep["message"])
+
+        cleaned_df = prep.get("data")
+        if cleaned_df is None or cleaned_df.empty:
+            raise HTTPException(status_code=400, detail="Aucune donnée exploitable à exporter.")
+
+        # 2. Génération du buffer binaire
+        file_bytes, media_type, ext = ml_service.export_processed_file(cleaned_df, file_format=export_format)
+
+        # 3. Nom du fichier téléchargé
+        original_base_name = file.filename.rsplit('.', 1)[0]
+        download_filename = f"{original_base_name}_clean.{ext}"
+
+        # 4. Envoi du fichier en StreamingResponse
+        return StreamingResponse(
+            io.BytesIO(file_bytes),
+            media_type=media_type,
+            headers={
+                "Content-Disposition": f'attachment; filename="{download_filename}"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            }
+        )
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erreur lors de l'exportation: {str(e)}")
 
 @router.post("/analyse-anomalies")
 async def analyse_anomalies(file: UploadFile = File(...),
@@ -146,4 +223,3 @@ def calculate_security(questionnaire: SecurityQuestionnaire,
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
