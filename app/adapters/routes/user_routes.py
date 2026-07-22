@@ -143,19 +143,31 @@ def get_collaborators(
         current_user: UserModel = Depends(get_current_user)
 ):
     """
-    Récupère la liste des collaborateurs du même account_type.
+    Récupère la liste des collaborateurs appartenant à la même organisation / type de compte,
+    en excluant l'utilisateur connecté.
     """
     try:
-        # Récupère tous les utilisateurs rattachés au même type de compte
-        users = db.query(UserModel).filter(
-            UserModel.account_type == current_user.account_type
-        ).all()
+        # 1. Vérification de sécurité : si account_type est vide ou None
+        if not current_user.account_type:
+            return []
 
-        # Sécurise la conversion de l'ID en string pour chaque utilisateur
+        # 2. Construction de la requête filtrée
+        query = db.query(UserModel).filter(
+            UserModel.account_type == current_user.account_type,
+            UserModel.id != current_user.id  # Exclut l'utilisateur connecté
+        )
+
+        # Si ton modèleUserModel contient un champ pour isoler par entreprise (ex: company_id ou entreprise)
+        if hasattr(UserModel, 'entreprise_id') and getattr(current_user, 'entreprise_id', None):
+            query = query.filter(UserModel.entreprise_id == current_user.entreprise_id)
+
+        users = query.all()
+
+        # 3. Formatage de la réponse
         result = []
         for u in users:
             user_data = UserResponse(
-                id=str(u.id),  # Force la conversion en str
+                id=str(u.id),
                 firstname=u.firstname,
                 lastname=u.lastname,
                 email=u.email,
@@ -166,6 +178,7 @@ def get_collaborators(
             result.append(user_data)
 
         return result
+
     except Exception as e:
         raise HTTPException(
             status_code=500,
