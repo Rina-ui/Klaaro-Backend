@@ -7,10 +7,13 @@ import pdfplumber
 from pypdf import PdfReader
 
 from app.entities.SecurityQuestionnaire import SecurityQuestionnaire
+from app.use_cases.services.llm import explication_service
+from app.use_cases.services.llm.explication_service import ExplicationService
 from app.use_cases.services.ml.klaaro_ml_service import ml_service
 from app.adapters.dependencies import get_current_user
 
 router = APIRouter(prefix="/ml", tags=["Machine Learning"])
+explication_service = ExplicationService(model_name="llama3.2")
 
 def _read_file_to_df(file: UploadFile) -> pd.DataFrame:
     """Transforme dynamiquement du CSV, Excel, JSON, XML ou PDF en DataFrame Pandas standard."""
@@ -199,21 +202,61 @@ async def predict_data(file: UploadFile = File(...), target_col: str = "ventes",
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/explain")
-def explain_data(instruction: str, current_user = Depends(get_current_user)):
+async def explain_data(
+        file: UploadFile = File(...),
+        target_col: str = Query("ventes", description="Colonne sur laquelle faire la prédiction"),
+        n_days: int = Query(30, description="Horizon de prédiction en jours"),
+        current_user = Depends(get_current_user)
+):
+    """
+    Analyse un fichier, génère les prédictions et les graphiques,
+    puis utilise Ollama pour produire une explication décisionnelle complète avec suggestions.
+    """
     try:
-        # =========================================================================
-        #  PARTIE TINYLLAMA MISE EN COMMENTAIRE POUR ÉVITER LES SATORATIONS RAM/CPU
-        # =========================================================================
-        # explanation = ml_service.generate_explanation(instruction)
-        # return {"explanation": explanation}
-        # =========================================================================
+        # 1. Lecture et parsing du fichier
+        df = _read_file_to_df(file)
 
-        # Mock temporaire en langage naturel pour le Front-end
+        # 2. Prétraitement avec le service ML
+        prep = ml_service.preprocess_data(df)
+        if prep.get("status") == "rejected":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=prep["message"]
+            )
+
+        df_clean = prep.get("data")
+
+        # 3. Calculs des anomalies et des prédictions
+        anomalies_res = ml_service.detect_anomalies(df_clean)
+        predict_res = ml_service.predict(df_clean, target_col=target_col, n_days=n_days)
+
+        # 4. Génération de la synthèse intelligente via Ollama
+        contexte_metier = f"Activité professionnelle ({getattr(current_user, 'profession', 'Entreprise')})"
+
+        synthese_explication = explication_service.generate_explication_complete(
+            rapport_pretraitement=prep["rapport"],
+            charts=prep["charts"],
+            predictions=predict_res,
+            anomalies=anomalies_res,
+            metier_contexte=contexte_metier
+        )
+
+        # 5. Retour structuré pour le Front-End KLAARO
         return {
-            "explanation": "Mode local activé (TinyLlama désactivé). Analyse des barplots et des prédictions opérationnelle."
+            "status": "success",
+            "explanation": synthese_explication,
+            "charts": prep["charts"],
+            "predictions": predict_res,
+            "anomalies": anomalies_res
         }
+
+    except HTTPException as http_ex:
+        raise http_ex
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Erreur lors de la génération de l'explication : {str(e)}"
+        )
 
 @router.post("/security-score")
 def calculate_security(questionnaire: SecurityQuestionnaire,
