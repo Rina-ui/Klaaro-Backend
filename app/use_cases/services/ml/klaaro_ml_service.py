@@ -19,6 +19,7 @@ class KlaaroMLService:
         self.label_encoder = None
         self.ollama_url = ollama_url
         self.ollama_model = ollama_model
+        self._ollama_warmed_up = False
         self._load_models()
 
     def _load_models(self):
@@ -58,7 +59,7 @@ class KlaaroMLService:
                 "6. Maximum 2 à 3 phrases."
             )
 
-        call_timeout = 30 if self._ollama_warmed_up else 60
+        call_timeout = 60 if self._ollama_warmed_up else 120
 
         try:
             response = requests.post(
