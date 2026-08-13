@@ -25,7 +25,7 @@ app = FastAPI(
 
 app = FastAPI(
     title="Klaaro API",
-    description="le backend",
+    description="la documentation de nos endpoints du backend",
     docs_url="/docs",
     version="1.0.0"
 )
